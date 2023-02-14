@@ -14,7 +14,7 @@ contract ContentCollection is ERC721, Admin {
     //Remaining whitelist places: tokenId => how much places in whitelist is currently availible
     mapping(uint256 => uint256) public remainingWhitelistPlaces;
 
-    //Prices: token id => currency address => price 
+    //Prices: token id => currency address => price.
     mapping(uint256 => mapping(address => uint256)) private _prices;
 
     constructor(string memory collectionName, string memory collectionSymbol) ERC721(collectionName, collectionSymbol) {}
@@ -51,6 +51,7 @@ contract ContentCollection is ERC721, Admin {
     } 
 
     function withdraw(address currency, uint256 amount) public onlyOwner {
+        require(IERC20(currency).balanceOf(address(this)) > 0, 'withdraw: nothing to wihdraw');
         IERC20(currency).safeTransferFrom(address(this), msg.sender, amount);
     }
 
