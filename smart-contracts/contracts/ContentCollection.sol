@@ -4,64 +4,66 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Strings.sol"; 
 import "./Admin.sol";
 
 contract ContentCollection is ERC721, Admin {
     using SafeERC20 for IERC20;
 
+    address private deployer;
+
     //Whitelists: tokenId => user address => is in whitelist bool
     mapping(uint256 => mapping(address => bool)) public whitelists;
-    //Remaining whitelist places: tokenId => how much places in whitelist is currently availible
+    //Remaining whitelist places: tokenId => how much places in whitelist is currently availible. if not rescticted, set 2**256
     mapping(uint256 => uint256) public remainingWhitelistPlaces;
 
-    //Prices: token id => currency address => price.
-    mapping(uint256 => mapping(address => uint256)) private _prices;
+    event NftCreated(uint256 tokenId, address indexed creator);
+    event WhiteListMembersSet(uint256 indexed tokenId, address[] members);
+    event WhiteListMembersDeleted(uint256 indexed tokenId, address[] members);
 
-    constructor(string memory collectionName, string memory collectionSymbol) ERC721(collectionName, collectionSymbol) {}
+    constructor(string memory collectionName, string memory collectionSymbol) ERC721(collectionName, collectionSymbol) {
+        deployer = msg.sender;
+    }
 
-    function createNft(uint256 tokenId, uint256 whitelistPlaces, address[] memory currencies, uint256[] memory prices) public onlyAdmin {
+    function createNft(uint256 tokenId, uint256 whitelistPlaces, address[] memory initialWhitelistMembers) public onlyAdmin {
         _mint(msg.sender, tokenId);
         remainingWhitelistPlaces[tokenId] = whitelistPlaces;
-        _setPrices(tokenId, currencies, prices);
+        setWhitelistMembers(tokenId, initialWhitelistMembers);
+        emit NftCreated(tokenId, msg.sender);
     }
 
-    function changePrices(uint256 tokenId, address[] memory currencies, uint256[] memory prices) public onlyAdmin {
-        _setPrices(tokenId, currencies, prices);
-    }
+    function changeRemainingWhitelistPlaces(uint256 tokenId, uint256 newRemaningPlacesCount) public onlyAdmin {
+        require (remainingWhitelistPlaces[tokenId] != newRemaningPlacesCount, "changeRemainingWhitelistPlaces: newRemaningPlacesCount is the same");
+        remainingWhitelistPlaces[tokenId] = newRemaningPlacesCount;
+    } 
 
-    function _setPrices(uint256 tokenId, address[] memory currencies, uint256[] memory prices) private {
-        for (uint256 i = 0; i < currencies.length; i++) {
-            require (prices[i] > 0, "_setPrices: price should be bigger than 0");
-            _prices[tokenId][currencies[i]] = prices[i];
+    function setWhitelistMembers(uint256 tokenId, address[] memory members) public onlyAdmin {
+        for (uint256 i = 0; i < members.length; i++) {
+            whitelists[tokenId][members[i]] = true;
+            remainingWhitelistPlaces[tokenId] -= 1;
+        }
+        if (members.length > 0) {
+            emit WhiteListMembersSet(tokenId, members);
         }
     }
 
-    // function changeRemainingWhitelistPlaces(uint256 tokenId, uint256 newRemaningPlacesCount) public onlyAdmin {
-    //     require ()
-    //     remainingWhitelistPlaces[tokenId] = newRemaningPlacesCount;
-    // } //todo remove? to prevent scam 
-
-    function buyAccess(uint256 tokenId, address currency) public {
-        require (msg.sender != owner(), "buyAccess: owner cannot buy access");
-        uint256 price = _prices[tokenId][currency];
-        require (price > 0, "buyAccess: currency is not accepted");
-        IERC20(currency).safeTransferFrom(msg.sender, address(this), price);
-        whitelists[tokenId][msg.sender] = true;
-        remainingWhitelistPlaces[tokenId] -= 1;
-    } 
-
-    function withdraw(address currency, uint256 amount) public onlyOwner {
-        require(IERC20(currency).balanceOf(address(this)) > 0, 'withdraw: nothing to wihdraw');
-        IERC20(currency).safeTransferFrom(address(this), msg.sender, amount);
+    function deleteWhitelistMembers(uint256 tokenId, address[] memory members) public onlyAdmin {
+        for (uint256 i = 0; i < members.length; i++) {
+            whitelists[tokenId][members[i]] = false;
+            remainingWhitelistPlaces[tokenId] += 1;
+        }
+        if (members.length > 0) {
+            emit WhiteListMembersDeleted(tokenId, members);
+        }
     }
 
     function getAccess(uint256 tokenId, address user) public view returns (bool){
-        //owner?
+        if (user == owner()) return true;
         return whitelists[tokenId][user];
     }
 
-    function getPrice(uint256 tokenId, address currency) public view returns (uint256) {
-        return _prices[tokenId][currency];
+    function getDeployer() public view returns (address) {
+        return deployer;
     }
 
 }
