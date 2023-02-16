@@ -8,19 +8,23 @@ contract ContentRoot {
     //add comission?
     //add events
 
-    event CollectionCreated(uint256 userId, address collectionAddress);
+    event CollectionCreated(uint256 ownerId, address collectionAddress);
 
     //Owner to collection: user/groupId => collection address
     mapping(uint256 => address) public ownerToCollection;
 
-    function createCollection(uint256 userId, string memory collectionName, string memory collectionSymbol) public returns (address) {
-        require(ownerToCollection[userId] == address(0), "createCollection: you already have a collection");
+    function createCollection(uint256 ownerId, string memory collectionName, string memory collectionSymbol) public returns (address) {
+        require(ownerToCollection[ownerId] == address(0), "createCollection: you already have a collection");
         ContentCollection collection = new ContentCollection(collectionName, collectionSymbol);
         collection.transferOwnership(msg.sender);
         address collectionAddress = address(collection);
-        ownerToCollection[userId] = collectionAddress;
-        emit CollectionCreated(userId, collectionAddress);
+        ownerToCollection[ownerId] = collectionAddress;
+        emit CollectionCreated(ownerId, collectionAddress);
         return collectionAddress;
+    }
+
+    function getCollection(uint256 ownerId) public view returns (address) {
+        return ownerToCollection[ownerId];
     }
 
 }

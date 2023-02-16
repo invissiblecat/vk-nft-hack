@@ -13,7 +13,7 @@ contract ContentCollection is ERC721, Admin {
     address private deployer;
 
     //Whitelists: tokenId => user address => is in whitelist bool
-    mapping(uint256 => mapping(address => bool)) public whitelists;
+    mapping(uint256 => mapping(address => bool)) private whitelists;
     //Remaining whitelist places: tokenId => how much places in whitelist is currently availible. if not rescticted, set 2**256
     mapping(uint256 => uint256) public remainingWhitelistPlaces;
 
@@ -38,6 +38,7 @@ contract ContentCollection is ERC721, Admin {
     } 
 
     function setWhitelistMembers(uint256 tokenId, address[] memory members) public onlyAdmin {
+        require (remainingWhitelistPlaces[tokenId] >= members.length, 'setWhitelistMembers: not enough places in whitelist');
         for (uint256 i = 0; i < members.length; i++) {
             whitelists[tokenId][members[i]] = true;
             remainingWhitelistPlaces[tokenId] -= 1;
