@@ -2,7 +2,10 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
+  Query,
+  Res,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -12,10 +15,13 @@ import { CreateMetadataDto } from './create-metadata.dto';
 import { Metadata } from '../schemas/metadata.schema';
 import { SignatureGuard } from 'src/signature/signature.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBody, ApiConsumes } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiParam, ApiProperty } from '@nestjs/swagger';
 import { MetadataImageDto } from './upload-image-dto';
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
+import { resolve } from 'path';
+import { Response } from 'express';
 
+const DEAFULT_IMAGES_PATH = './images';
 @Controller('metadata')
 export class MetadataController {
   constructor(private readonly metadataService: MetadataService) {}
@@ -31,7 +37,7 @@ export class MetadataController {
     return this.metadataService.findAll();
   }
 
-  @Post('upload')
+  @Post('uploadImage')
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -49,12 +55,28 @@ export class MetadataController {
   })
   @UseInterceptors(FileInterceptor('file'))
   uploadFile(@Body() body: MetadataImageDto, @UploadedFile('file') file) {
-    const path = './images';
-    console.log(existsSync(path));
-    if (!existsSync(path)) {
-      mkdirSync(path);
+    console.log(existsSync(DEAFULT_IMAGES_PATH));
+    if (!existsSync(DEAFULT_IMAGES_PATH)) {
+      mkdirSync(DEAFULT_IMAGES_PATH);
     }
 
-    writeFileSync(path + '/' + file.originalname, file.buffer);
+    writeFileSync(DEAFULT_IMAGES_PATH + '/' + file.originalname, file.buffer);
+  }
+
+  @Get('downloadImage')
+  downloadFile(
+    @Query('imageName') imageName: string,
+    @Res() response: Response,
+  ) {
+    console.log({ imageName });
+
+    const filePath = DEAFULT_IMAGES_PATH + '/' + imageName;
+    const resolvedPath = resolve(filePath);
+    console.log({ resolvedPath });
+    if (!existsSync(resolvedPath)) {
+      console.log(1);
+    }
+    response.download(resolvedPath);
+    return response;
   }
 }
