@@ -12,8 +12,7 @@ export class SignatureStrategy extends PassportStrategy(Strategy, 'signature') {
   }
   async validate(req: Request): Promise<any> {
     const headers: any = req.headers;
-    const auth: string = headers.authorization;
-    const signature = auth.split('Signature')[1].trim();
+    const signature: string = headers.authorization;
 
     try {
       const userAddress = verifyMessage(messageToSign, signature);
