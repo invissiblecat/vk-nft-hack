@@ -3,5 +3,4 @@ export class CreateMetadataDto {
   readonly collectionAddress: string;
   readonly link?: string;
   readonly text?: string;
-  readonly pathToImage?: string;
 }

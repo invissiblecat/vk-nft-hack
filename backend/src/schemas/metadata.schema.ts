@@ -1,3 +1,4 @@
+import { Optional } from '@nestjs/common';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 
@@ -5,9 +6,6 @@ export type MetadataDocument = HydratedDocument<Metadata>;
 
 @Schema()
 export class Metadata {
-  @Prop()
-  _id: Types.ObjectId;
-
   @Prop({ required: true })
   tokenId: string;
 

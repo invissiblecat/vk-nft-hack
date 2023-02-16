@@ -24,27 +24,29 @@ export class MetadataService {
     @InjectModel('Metadata') private metadataModel: Model<MetadataDocument>,
   ) {}
 
-  async create(createMetadataDto: CreateMetadataDto): Promise<Metadata> {
+  async create(
+    createMetadataDto: CreateMetadataDto,
+  ): Promise<MetadataDocument> {
     const createdMetadata = new this.metadataModel(createMetadataDto);
     return createdMetadata.save();
   }
 
-  async findAll(): Promise<Metadata[]> {
+  async findAll(): Promise<MetadataDocument[]> {
     return this.metadataModel.find();
   }
 
-  async findById(id: string): Promise<Metadata> {
+  async findById(id: string): Promise<MetadataDocument> {
     return this.metadataModel.findById(id);
   }
 
-  async findOne(filter: FilterQuery<Metadata>): Promise<Metadata> {
+  async findOne(filter: FilterQuery<Metadata>): Promise<MetadataDocument> {
     return this.metadataModel.findOne(filter);
   }
 
   async updateById(
     id: Types.ObjectId,
     data: UpdateMetadataDto,
-  ): Promise<Metadata> {
+  ): Promise<MetadataDocument> {
     return this.metadataModel.findByIdAndUpdate(
       id,
       { $set: data },
