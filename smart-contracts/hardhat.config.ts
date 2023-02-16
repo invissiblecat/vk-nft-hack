@@ -13,7 +13,7 @@ const config: HardhatUserConfig = {
   },
   networks: {
     hardhat: {
-      accounts: { count: 10 },
+      accounts: { count: 20 },
     },
   },
 };

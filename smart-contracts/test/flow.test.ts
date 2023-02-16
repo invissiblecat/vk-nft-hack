@@ -4,12 +4,7 @@ import { expect } from "chai";
 import { BigNumber } from "ethers";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { ethers } from "hardhat";
-import {
-  ContentCollection,
-  ContentRoot,
-  CustomErc20,
-  ERC20,
-} from "../typechain-types";
+import { ContentCollection, ContentRoot } from "../typechain-types";
 
 describe("flow", () => {
   let ContentRoot: ContentRoot;
@@ -23,27 +18,17 @@ describe("flow", () => {
   let user2: SignerWithAddress;
   const user2Id = 2;
 
-  let erc20: CustomErc20;
-
   before(async () => {
     [owner, user1, user2] = await ethers.getSigners();
 
     const rootFactory = await ethers.getContractFactory("ContentRoot");
     ContentRoot = await rootFactory.deploy();
     await ContentRoot.deployed();
-
-    const erc20Fatory = await ethers.getContractFactory("CustomErc20");
-    erc20 = await erc20Fatory.deploy(owner.address);
-    await erc20.deployed();
   });
 
-  it(`should allow create collection from owner with id ${ownerId}`, async () => {
-    const tx = await ContentRoot.createCollection(
-      ownerId,
-      "Owner Collection",
-      "OWNR"
-    );
-    await tx.wait();
+  it(`should create collection from owner with id ${ownerId}`, async () => {
+    await ContentRoot.createCollection(ownerId, "Owner Collection", "OWNR");
+
     const ownerCollectionAddress = await ContentRoot.ownerToCollection(ownerId);
     ownerCollection = await ethers.getContractAt(
       "ContentCollection",
@@ -57,25 +42,257 @@ describe("flow", () => {
     ).to.be.revertedWith("createCollection: you already have a collection");
   });
 
-  it(`should allow owner createNft`, async () => {
+  it(`should createNft`, async () => {
     const tokenId = 0;
     const whitelistPlacesCount = 2;
-    const currencies = [erc20.address];
-    const prices = [parseUnits("1")];
+    const initialWhitelistMembers = [user1.address];
 
-    const tx = await ownerCollection.createNft(
+    await ownerCollection.createNft(
       tokenId,
       whitelistPlacesCount,
-      currencies,
-      prices
+      initialWhitelistMembers
     );
-    await tx.wait();
 
-    expect(await ownerCollection.getPrice(tokenId, currencies[0])).to.be.eq(
-      prices[0]
+    expect(await ownerCollection.remainingWhitelistPlaces(tokenId)).to.be.equal(
+      BigNumber.from(1)
     );
-    expect(await ownerCollection.remainingWhitelistPlaces(tokenId)).to.be.eq(
-      BigNumber.from(whitelistPlacesCount)
+    expect(await ownerCollection.getAccess(tokenId, user1.address)).to.be.equal(
+      true
     );
+    expect(await ownerCollection.getAccess(tokenId, user2.address)).to.be.equal(
+      false
+    );
+  });
+
+  it(`should not allow user1 createNft in owner collection`, async () => {
+    const tokenId = 0; //despite the same tokenId as in previous test, modifier should not allow to make it inside the method
+
+    expect(
+      ownerCollection
+        .connect(user1)
+        .createNft(tokenId, ethers.constants.MaxUint256, [])
+    ).to.be.revertedWith("access denied");
+  });
+
+  it(`should not allow owner createNft with same tokenId`, async () => {
+    const tokenId = 0;
+
+    expect(
+      ownerCollection.createNft(tokenId, ethers.constants.MaxUint256, [])
+    ).to.be.revertedWith("ERC721: token already minted");
+  });
+
+  it(`should change number of whitelist places`, async () => {
+    const tokenId = 0;
+    const previousRemaining = await ownerCollection.remainingWhitelistPlaces(
+      tokenId
+    );
+
+    await ownerCollection.changeRemainingWhitelistPlaces(tokenId, 5);
+
+    const currentRemaining = await ownerCollection.remainingWhitelistPlaces(
+      tokenId
+    );
+
+    expect(currentRemaining).to.be.greaterThan(previousRemaining);
+    expect(currentRemaining).to.be.equal(BigNumber.from(5));
+  });
+
+  it(`should not allow user1 change number of whitelist places in owner collection`, async () => {
+    const tokenId = 0;
+
+    expect(
+      ownerCollection.connect(user1).changeRemainingWhitelistPlaces(tokenId, 5)
+    ).to.be.revertedWith("access denied");
+  });
+
+  it(`should not allow change number of whitelist places to same number`, async () => {
+    const tokenId = 0;
+
+    expect(
+      ownerCollection.changeRemainingWhitelistPlaces(tokenId, 5)
+    ).to.be.revertedWith(
+      "changeRemainingWhitelistPlaces: newRemaningPlacesCount is the same"
+    );
+  });
+
+  it(`should not allow change number of whitelist places if token not minted`, async () => {
+    const tokenId = 1;
+
+    expect(
+      ownerCollection.changeRemainingWhitelistPlaces(tokenId, 5)
+    ).to.be.revertedWith("ERC721: invalid token ID");
+  });
+
+  it(`should set new whitelist members`, async () => {
+    const tokenId = 0;
+    const newWhitelistMembers = [user2.address];
+    expect(await ownerCollection.getAccess(tokenId, user2.address)).to.be.equal(
+      false
+    );
+
+    const previousRemaining = await ownerCollection.remainingWhitelistPlaces(
+      tokenId
+    );
+
+    await ownerCollection.setWhitelistMembers(tokenId, newWhitelistMembers);
+
+    const currentRemaining = await ownerCollection.remainingWhitelistPlaces(
+      tokenId
+    );
+
+    expect(currentRemaining).to.be.lessThan(previousRemaining);
+    expect(await ownerCollection.getAccess(tokenId, user2.address)).to.be.equal(
+      true
+    );
+  });
+
+  it(`should not allow set too much members in whitelist`, async () => {
+    const tokenId = 0;
+    const [owner, user1, user2, user3, user4, user6, user8, user9, user10] =
+      await ethers.getSigners();
+    const newWhitelistMembers = [
+      owner.address,
+      user1.address,
+      user2.address,
+      user3.address,
+      user4.address,
+      user6.address,
+      user8.address,
+      user9.address,
+      user10.address,
+    ];
+
+    expect(
+      ownerCollection.setWhitelistMembers(tokenId, newWhitelistMembers)
+    ).to.be.revertedWith("setWhitelistMembers: not enough places in whitelist");
+  });
+
+  it(`should not decrease remaining whitelist if already existing member is added`, async () => {
+    const tokenId = 0;
+
+    expect(await ownerCollection.getAccess(tokenId, user1.address)).to.be.equal(
+      true
+    );
+    const previousRemaining = await ownerCollection.remainingWhitelistPlaces(
+      tokenId
+    );
+
+    await ownerCollection.setWhitelistMembers(tokenId, [user1.address]);
+
+    expect(await ownerCollection.getAccess(tokenId, user1.address)).to.be.equal(
+      true
+    );
+    const currentRemaining = await ownerCollection.remainingWhitelistPlaces(
+      tokenId
+    );
+
+    expect(currentRemaining).to.be.equal(previousRemaining);
+  });
+
+  it(`should not add owner in whitelist`, async () => {
+    const tokenId = 0;
+
+    expect(await ownerCollection.getAccess(tokenId, user1.address)).to.be.equal(
+      true
+    );
+    const previousRemaining = await ownerCollection.remainingWhitelistPlaces(
+      tokenId
+    );
+
+    await ownerCollection.setWhitelistMembers(tokenId, [owner.address]);
+
+    expect(await ownerCollection.getAccess(tokenId, user1.address)).to.be.equal(
+      true
+    );
+    const currentRemaining = await ownerCollection.remainingWhitelistPlaces(
+      tokenId
+    );
+
+    expect(currentRemaining).to.be.equal(previousRemaining);
+  });
+
+  it(`should not allow set whitelist members if token not minted`, async () => {
+    const tokenId = 1;
+
+    expect(
+      ownerCollection.setWhitelistMembers(tokenId, [owner.address])
+    ).to.be.revertedWith("ERC721: invalid token ID");
+  });
+
+  it(`should not allow user1 set members to whitelist in owner collection`, async () => {
+    const tokenId = 0;
+
+    expect(
+      ownerCollection
+        .connect(user1)
+        .setWhitelistMembers(tokenId, [owner.address])
+    ).to.be.revertedWith("access denied");
+  });
+
+  it(`should delete members from whitelist`, async () => {
+    const tokenId = 0;
+    const membersToDelete = [user1.address];
+
+    expect(await ownerCollection.getAccess(tokenId, user1.address)).to.be.equal(
+      true
+    );
+    const previousRemaining = await ownerCollection.remainingWhitelistPlaces(
+      tokenId
+    );
+
+    await ownerCollection.deleteWhitelistMembers(tokenId, membersToDelete);
+
+    expect(await ownerCollection.getAccess(tokenId, user1.address)).to.be.equal(
+      false
+    );
+    const currentRemaining = await ownerCollection.remainingWhitelistPlaces(
+      tokenId
+    );
+
+    expect(previousRemaining).to.be.lessThan(currentRemaining);
+  });
+
+  it(`should not increse remaining places if no one was deleted`, async () => {
+    const tokenId = 0;
+    const membersToDelete = [user1.address];
+
+    expect(await ownerCollection.getAccess(tokenId, user1.address)).to.be.equal(
+      false
+    );
+    const previousRemaining = await ownerCollection.remainingWhitelistPlaces(
+      tokenId
+    );
+
+    await ownerCollection.deleteWhitelistMembers(tokenId, membersToDelete);
+
+    expect(await ownerCollection.getAccess(tokenId, user1.address)).to.be.equal(
+      false
+    );
+    const currentRemaining = await ownerCollection.remainingWhitelistPlaces(
+      tokenId
+    );
+
+    expect(previousRemaining).to.be.equal(currentRemaining);
+  });
+
+  it(`should not delete whitelist members if token not minted`, async () => {
+    const tokenId = 1;
+    const membersToDelete = [user1.address];
+
+    expect(
+      ownerCollection.deleteWhitelistMembers(tokenId, membersToDelete)
+    ).to.be.revertedWith("ERC721: invalid token ID");
+  });
+
+  it(`should not allow user1 delete members of whitelist in owner collection`, async () => {
+    const tokenId = 0;
+    const membersToDelete = [user1.address];
+
+    expect(
+      ownerCollection
+        .connect(user1)
+        .deleteWhitelistMembers(tokenId, membersToDelete)
+    ).to.be.revertedWith("access denied");
   });
 });

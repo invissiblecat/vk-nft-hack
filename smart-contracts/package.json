@@ -2,7 +2,8 @@
   "name": "vk-nft-hack",
   "scripts": {
     "compile": "hardhat compile",
-    "test": "hardhat test"
+    "t": "hardhat test",
+    "test": "yarn t"
   },
   "dependencies": {
     "@ethersproject/abi": "^5.7.0",

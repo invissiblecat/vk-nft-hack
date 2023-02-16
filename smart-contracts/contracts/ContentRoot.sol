@@ -22,9 +22,4 @@ contract ContentRoot {
         emit CollectionCreated(ownerId, collectionAddress);
         return collectionAddress;
     }
-
-    function getCollection(uint256 ownerId) public view returns (address) {
-        return ownerToCollection[ownerId];
-    }
-
 }

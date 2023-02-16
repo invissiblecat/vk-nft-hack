@@ -21,6 +21,11 @@ contract ContentCollection is ERC721, Admin {
     event WhiteListMembersSet(uint256 indexed tokenId, address[] members);
     event WhiteListMembersDeleted(uint256 indexed tokenId, address[] members);
 
+    modifier tokenMinted(uint256 tokenId) {
+        _requireMinted(tokenId);
+        _;
+    }
+
     constructor(string memory collectionName, string memory collectionSymbol) ERC721(collectionName, collectionSymbol) {
         deployer = msg.sender;
     }
@@ -32,14 +37,15 @@ contract ContentCollection is ERC721, Admin {
         emit NftCreated(tokenId, msg.sender);
     }
 
-    function changeRemainingWhitelistPlaces(uint256 tokenId, uint256 newRemaningPlacesCount) public onlyAdmin {
+    function changeRemainingWhitelistPlaces(uint256 tokenId, uint256 newRemaningPlacesCount) public onlyAdmin tokenMinted(tokenId) {
         require (remainingWhitelistPlaces[tokenId] != newRemaningPlacesCount, "changeRemainingWhitelistPlaces: newRemaningPlacesCount is the same");
         remainingWhitelistPlaces[tokenId] = newRemaningPlacesCount;
     } 
 
-    function setWhitelistMembers(uint256 tokenId, address[] memory members) public onlyAdmin {
-        require (remainingWhitelistPlaces[tokenId] >= members.length, 'setWhitelistMembers: not enough places in whitelist');
+    function setWhitelistMembers(uint256 tokenId, address[] memory members) public onlyAdmin tokenMinted(tokenId) {
+        require (remainingWhitelistPlaces[tokenId] >= members.length, 'setWhitelistMembers: not enough places in whitelist'); //todo require token is deployed
         for (uint256 i = 0; i < members.length; i++) {
+            if (getAccess(tokenId, members[i])) continue;
             whitelists[tokenId][members[i]] = true;
             remainingWhitelistPlaces[tokenId] -= 1;
         }
@@ -48,8 +54,9 @@ contract ContentCollection is ERC721, Admin {
         }
     }
 
-    function deleteWhitelistMembers(uint256 tokenId, address[] memory members) public onlyAdmin {
+    function deleteWhitelistMembers(uint256 tokenId, address[] memory members) public onlyAdmin tokenMinted(tokenId) {
         for (uint256 i = 0; i < members.length; i++) {
+            if (!getAccess(tokenId, members[i])) continue;
             whitelists[tokenId][members[i]] = false;
             remainingWhitelistPlaces[tokenId] += 1;
         }
@@ -59,7 +66,7 @@ contract ContentCollection is ERC721, Admin {
     }
 
     function getAccess(uint256 tokenId, address user) public view returns (bool){
-        if (user == owner()) return true;
+        if (user == owner() || isAdmin(user)) return true;
         return whitelists[tokenId][user];
     }
 
