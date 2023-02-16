@@ -1,6 +1,6 @@
-import { Optional } from '@nestjs/common';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
+import { Collection } from './collection.schema';
 
 export type MetadataDocument = HydratedDocument<Metadata>;
 
@@ -9,8 +9,8 @@ export class Metadata {
   @Prop({ required: true })
   tokenId: string;
 
-  @Prop({ required: true })
-  collectionAddress: string;
+  @Prop({ type: Types.ObjectId, ref: 'Collection', required: true })
+  nftCollection: Collection;
 
   @Prop()
   link?: string;

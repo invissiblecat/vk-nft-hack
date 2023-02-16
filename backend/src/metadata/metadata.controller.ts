@@ -3,17 +3,34 @@ import { MetadataService } from './metadata.service';
 import { CreateMetadataDto } from './dto/create-metadata.dto';
 import { Metadata } from '../schemas/metadata.schema';
 import { CheckSignature } from 'src/signature/signature.guard';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { CollectionService } from 'src/collection/collection.service';
 
 @Controller('metadata')
 export class MetadataController {
-  constructor(private readonly metadataService: MetadataService) {}
+  constructor(
+    private readonly metadataService: MetadataService,
+    private readonly collectionService: CollectionService,
+  ) {}
 
   @Post()
-  @ApiBearerAuth('Signature')
-  @CheckSignature()
+  // @CheckSignature() todo
   async create(@Body() createMetadataDto: CreateMetadataDto) {
-    await this.metadataService.create(createMetadataDto);
+    let collection = await this.collectionService.findOne({
+      collectionAddress: createMetadataDto.collectionAddress,
+    });
+    //todo check is correct address
+    if (!collection) {
+      collection = await this.collectionService.create({
+        collectionAddress: createMetadataDto.collectionAddress,
+      });
+    }
+
+    const { collectionAddress, ...data } = createMetadataDto;
+    const metadata = await this.metadataService.create({
+      ...data,
+      nftCollection: collection,
+    });
+    await this.collectionService.addTokenMetadata(collection.id, metadata.id);
   }
 
   @Get()

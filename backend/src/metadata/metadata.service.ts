@@ -24,34 +24,30 @@ export class MetadataService {
     @InjectModel('Metadata') private metadataModel: Model<MetadataDocument>,
   ) {}
 
-  async create(
-    createMetadataDto: CreateMetadataDto,
-  ): Promise<MetadataDocument> {
+  async create(createMetadataDto: Metadata): Promise<MetadataDocument> {
     const createdMetadata = new this.metadataModel(createMetadataDto);
     return createdMetadata.save();
   }
 
   async findAll(): Promise<MetadataDocument[]> {
-    return this.metadataModel.find();
+    return this.metadataModel.find().populate('nftCollection');
   }
 
   async findById(id: string): Promise<MetadataDocument> {
-    return this.metadataModel.findById(id);
+    return this.metadataModel.findById(id).populate('nftCollection');
   }
 
   async findOne(filter: FilterQuery<Metadata>): Promise<MetadataDocument> {
-    return this.metadataModel.findOne(filter);
+    return this.metadataModel.findOne(filter).populate('nftCollection');
   }
 
   async updateById(
     id: Types.ObjectId,
     data: UpdateMetadataDto,
   ): Promise<MetadataDocument> {
-    return this.metadataModel.findByIdAndUpdate(
-      id,
-      { $set: data },
-      { new: true },
-    );
+    return this.metadataModel
+      .findByIdAndUpdate(id, { $set: data }, { new: true })
+      .populate('nftCollection');
   }
 
   makeFileName(tokenId: string, originalName: string) {
