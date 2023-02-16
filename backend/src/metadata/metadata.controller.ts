@@ -1,8 +1,8 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { MetadataService } from './metadata.service';
 import { CreateMetadataDto } from './dto/create-metadata.dto';
 import { Metadata } from '../schemas/metadata.schema';
-import { SignatureGuard } from 'src/signature/signature.guard';
+import { CheckSignature } from 'src/signature/signature.guard';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('metadata')
@@ -11,7 +11,7 @@ export class MetadataController {
 
   @Post()
   @ApiBearerAuth('Signature')
-  @UseGuards(SignatureGuard)
+  @CheckSignature()
   async create(@Body() createMetadataDto: CreateMetadataDto) {
     await this.metadataService.create(createMetadataDto);
   }
