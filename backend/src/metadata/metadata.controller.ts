@@ -1,4 +1,11 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  Post,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { MetadataService } from './metadata.service';
 import { CreateMetadataDto } from './dto/create-metadata.dto';
 import { Metadata } from '../schemas/metadata.schema';
@@ -16,22 +23,30 @@ export class MetadataController {
   // @CheckSignature() todo
   async create(@Body() createMetadataDto: CreateMetadataDto) {
     const { collectionAddress, ownerId, ...data } = createMetadataDto;
-    let collection = await this.collectionService.findOne({
-      collectionAddress,
-    });
-    //todo check is correct address
-    if (!collection) {
-      collection = await this.collectionService.create({
+    try {
+      let collection = await this.collectionService.findOne({
         collectionAddress,
-        ownerId,
       });
-    }
+      //todo check is correct address
+      if (!collection) {
+        collection = await this.collectionService.create({
+          collectionAddress,
+          ownerId,
+        });
+      }
 
-    const metadata = await this.metadataService.create({
-      ...data,
-      nftCollection: collection,
-    });
-    await this.collectionService.addTokenMetadata(collection.id, metadata.id);
+      const metadata = await this.metadataService.create({
+        ...data,
+        nftCollection: collection,
+      });
+      await this.collectionService.addTokenMetadata(collection.id, metadata.id);
+    } catch (error) {
+      if (error.code == 11000) {
+        throw new UnprocessableEntityException(
+          'Duplicate key. Check if tokenId is unique',
+        );
+      }
+    }
   }
 
   @Get()

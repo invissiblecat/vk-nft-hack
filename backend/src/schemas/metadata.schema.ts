@@ -6,10 +6,14 @@ export type MetadataDocument = HydratedDocument<Metadata>;
 
 @Schema()
 export class Metadata {
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true })
   tokenId: string;
 
-  @Prop({ type: Types.ObjectId, ref: 'Collection', required: true })
+  @Prop({
+    type: Types.ObjectId,
+    ref: 'Collection',
+    required: true,
+  })
   nftCollection: Collection;
 
   @Prop()

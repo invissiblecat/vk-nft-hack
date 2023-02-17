@@ -6,10 +6,10 @@ export type CollectionDocument = HydratedDocument<Collection>;
 
 @Schema()
 export class Collection {
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true })
   collectionAddress: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true })
   ownerId: string;
 
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Metadata' }] })
