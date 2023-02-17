@@ -27,7 +27,9 @@ describe("flow", () => {
   it(`should create collection from owner with id ${ownerId}`, async () => {
     await ContentRoot.createCollection(ownerId, "Owner Collection", "OWNR");
 
-    const ownerCollectionAddress = await ContentRoot.ownerToCollection(ownerId);
+    const ownerCollectionAddress = await ContentRoot.ownerIdToCollection(
+      ownerId
+    );
     ownerCollection = await ethers.getContractAt(
       "ContentCollection",
       ownerCollectionAddress
@@ -41,17 +43,16 @@ describe("flow", () => {
   });
 
   it(`should createNft`, async () => {
-    const tokenId = 0;
+    const tokenId = 1;
     const whitelistPlacesCount = 2;
     const initialWhitelistMembers = [user1.address];
 
     await ownerCollection.createNft(
-      tokenId,
       whitelistPlacesCount,
       initialWhitelistMembers
     );
 
-    expect(await ownerCollection.remainingWhitelistPlaces(tokenId)).to.be.equal(
+    expect(await ownerCollection.whitelistLimits(tokenId)).to.be.equal(
       BigNumber.from(1)
     );
     expect(await ownerCollection.getAccess(tokenId, user1.address)).to.be.equal(
@@ -63,41 +64,25 @@ describe("flow", () => {
   });
 
   it(`should not allow user1 createNft in owner collection`, async () => {
-    const tokenId = 0; //despite the same tokenId as in previous test, modifier should not allow to make it inside the method
-
     expect(
-      ownerCollection
-        .connect(user1)
-        .createNft(tokenId, ethers.constants.MaxUint256, [])
+      ownerCollection.connect(user1).createNft(ethers.constants.MaxUint256, [])
     ).to.be.revertedWith("access denied");
   });
 
-  it(`should not allow owner createNft with same tokenId`, async () => {
-    const tokenId = 0;
-
-    expect(
-      ownerCollection.createNft(tokenId, ethers.constants.MaxUint256, [])
-    ).to.be.revertedWith("ERC721: token already minted");
-  });
-
   it(`should change number of whitelist places`, async () => {
-    const tokenId = 0;
-    const previousRemaining = await ownerCollection.remainingWhitelistPlaces(
-      tokenId
-    );
+    const tokenId = 1;
+    const previousRemaining = await ownerCollection.whitelistLimits(tokenId);
 
     await ownerCollection.changeRemainingWhitelistPlaces(tokenId, 5);
 
-    const currentRemaining = await ownerCollection.remainingWhitelistPlaces(
-      tokenId
-    );
+    const currentRemaining = await ownerCollection.whitelistLimits(tokenId);
 
     expect(currentRemaining).to.be.greaterThan(previousRemaining);
     expect(currentRemaining).to.be.equal(BigNumber.from(5));
   });
 
   it(`should not allow user1 change number of whitelist places in owner collection`, async () => {
-    const tokenId = 0;
+    const tokenId = 1;
 
     expect(
       ownerCollection.connect(user1).changeRemainingWhitelistPlaces(tokenId, 5)
@@ -105,7 +90,7 @@ describe("flow", () => {
   });
 
   it(`should not allow change number of whitelist places to same number`, async () => {
-    const tokenId = 0;
+    const tokenId = 1;
 
     expect(
       ownerCollection.changeRemainingWhitelistPlaces(tokenId, 5)
@@ -115,7 +100,7 @@ describe("flow", () => {
   });
 
   it(`should not allow change number of whitelist places if token not minted`, async () => {
-    const tokenId = 1;
+    const tokenId = 0;
 
     expect(
       ownerCollection.changeRemainingWhitelistPlaces(tokenId, 5)
@@ -123,21 +108,17 @@ describe("flow", () => {
   });
 
   it(`should set new whitelist members`, async () => {
-    const tokenId = 0;
+    const tokenId = 1;
     const newWhitelistMembers = [user2.address];
     expect(await ownerCollection.getAccess(tokenId, user2.address)).to.be.equal(
       false
     );
 
-    const previousRemaining = await ownerCollection.remainingWhitelistPlaces(
-      tokenId
-    );
+    const previousRemaining = await ownerCollection.whitelistLimits(tokenId);
 
     await ownerCollection.setWhitelistMembers(tokenId, newWhitelistMembers);
 
-    const currentRemaining = await ownerCollection.remainingWhitelistPlaces(
-      tokenId
-    );
+    const currentRemaining = await ownerCollection.whitelistLimits(tokenId);
 
     expect(currentRemaining).to.be.lessThan(previousRemaining);
     expect(await ownerCollection.getAccess(tokenId, user2.address)).to.be.equal(
@@ -146,7 +127,7 @@ describe("flow", () => {
   });
 
   it(`should not allow set too much members in whitelist`, async () => {
-    const tokenId = 0;
+    const tokenId = 1;
     const [owner, user1, user2, user3, user4, user6, user8, user9, user10] =
       await ethers.getSigners();
     const newWhitelistMembers = [
@@ -167,51 +148,43 @@ describe("flow", () => {
   });
 
   it(`should not decrease remaining whitelist if already existing member is added`, async () => {
-    const tokenId = 0;
+    const tokenId = 1;
 
     expect(await ownerCollection.getAccess(tokenId, user1.address)).to.be.equal(
       true
     );
-    const previousRemaining = await ownerCollection.remainingWhitelistPlaces(
-      tokenId
-    );
+    const previousRemaining = await ownerCollection.whitelistLimits(tokenId);
 
     await ownerCollection.setWhitelistMembers(tokenId, [user1.address]);
 
     expect(await ownerCollection.getAccess(tokenId, user1.address)).to.be.equal(
       true
     );
-    const currentRemaining = await ownerCollection.remainingWhitelistPlaces(
-      tokenId
-    );
+    const currentRemaining = await ownerCollection.whitelistLimits(tokenId);
 
     expect(currentRemaining).to.be.equal(previousRemaining);
   });
 
   it(`should not add owner in whitelist`, async () => {
-    const tokenId = 0;
+    const tokenId = 1;
 
     expect(await ownerCollection.getAccess(tokenId, user1.address)).to.be.equal(
       true
     );
-    const previousRemaining = await ownerCollection.remainingWhitelistPlaces(
-      tokenId
-    );
+    const previousRemaining = await ownerCollection.whitelistLimits(tokenId);
 
     await ownerCollection.setWhitelistMembers(tokenId, [owner.address]);
 
     expect(await ownerCollection.getAccess(tokenId, user1.address)).to.be.equal(
       true
     );
-    const currentRemaining = await ownerCollection.remainingWhitelistPlaces(
-      tokenId
-    );
+    const currentRemaining = await ownerCollection.whitelistLimits(tokenId);
 
     expect(currentRemaining).to.be.equal(previousRemaining);
   });
 
   it(`should not allow set whitelist members if token not minted`, async () => {
-    const tokenId = 1;
+    const tokenId = 0;
 
     expect(
       ownerCollection.setWhitelistMembers(tokenId, [owner.address])
@@ -219,7 +192,7 @@ describe("flow", () => {
   });
 
   it(`should not allow user1 set members to whitelist in owner collection`, async () => {
-    const tokenId = 0;
+    const tokenId = 1;
 
     expect(
       ownerCollection
@@ -229,53 +202,45 @@ describe("flow", () => {
   });
 
   it(`should delete members from whitelist`, async () => {
-    const tokenId = 0;
+    const tokenId = 1;
     const membersToDelete = [user1.address];
 
     expect(await ownerCollection.getAccess(tokenId, user1.address)).to.be.equal(
       true
     );
-    const previousRemaining = await ownerCollection.remainingWhitelistPlaces(
-      tokenId
-    );
+    const previousRemaining = await ownerCollection.whitelistLimits(tokenId);
 
     await ownerCollection.deleteWhitelistMembers(tokenId, membersToDelete);
 
     expect(await ownerCollection.getAccess(tokenId, user1.address)).to.be.equal(
       false
     );
-    const currentRemaining = await ownerCollection.remainingWhitelistPlaces(
-      tokenId
-    );
+    const currentRemaining = await ownerCollection.whitelistLimits(tokenId);
 
     expect(previousRemaining).to.be.lessThan(currentRemaining);
   });
 
   it(`should not increse remaining places if no one was deleted`, async () => {
-    const tokenId = 0;
+    const tokenId = 1;
     const membersToDelete = [user1.address];
 
     expect(await ownerCollection.getAccess(tokenId, user1.address)).to.be.equal(
       false
     );
-    const previousRemaining = await ownerCollection.remainingWhitelistPlaces(
-      tokenId
-    );
+    const previousRemaining = await ownerCollection.whitelistLimits(tokenId);
 
     await ownerCollection.deleteWhitelistMembers(tokenId, membersToDelete);
 
     expect(await ownerCollection.getAccess(tokenId, user1.address)).to.be.equal(
       false
     );
-    const currentRemaining = await ownerCollection.remainingWhitelistPlaces(
-      tokenId
-    );
+    const currentRemaining = await ownerCollection.whitelistLimits(tokenId);
 
     expect(previousRemaining).to.be.equal(currentRemaining);
   });
 
   it(`should not delete whitelist members if token not minted`, async () => {
-    const tokenId = 1;
+    const tokenId = 0;
     const membersToDelete = [user1.address];
 
     expect(
@@ -284,7 +249,7 @@ describe("flow", () => {
   });
 
   it(`should not allow user1 delete members of whitelist in owner collection`, async () => {
-    const tokenId = 0;
+    const tokenId = 1;
     const membersToDelete = [user1.address];
 
     expect(

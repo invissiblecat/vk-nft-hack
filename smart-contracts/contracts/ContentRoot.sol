@@ -11,19 +11,19 @@ contract ContentRoot {
     event CollectionCreated(uint256 ownerId, address collectionAddress);
 
     //Owner to collection: user/groupId => collection address
-    mapping(uint256 => address) public ownerToCollection;
+    mapping(uint256 => address) public ownerIdToCollection;
 
     function createCollection(uint256 ownerId, string memory collectionName, string memory collectionSymbol) public returns (address) {
-        require(ownerToCollection[ownerId] == address(0), "createCollection: you already have a collection");
+        require(ownerIdToCollection[ownerId] == address(0), "createCollection: you already have a collection");
         ContentCollection collection = new ContentCollection(collectionName, collectionSymbol);
         collection.transferOwnership(msg.sender);
         address collectionAddress = address(collection);
-        ownerToCollection[ownerId] = collectionAddress;
+        ownerIdToCollection[ownerId] = collectionAddress;
         emit CollectionCreated(ownerId, collectionAddress);
         return collectionAddress;
     }
 
     function deleteCollection(uint256 ownerId) public { //todo REMOVE 
-        ownerToCollection[ownerId] = address(0);
+        ownerIdToCollection[ownerId] = address(0);
     }
 }

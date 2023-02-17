@@ -5,11 +5,13 @@ async function main() {
     "ContentRoot",
     process.env.CONTENT_ROOT_ADDRESS!
   );
-  const ownerId = "123"; //67135042
-  await contentRoot.deleteCollection(ownerId);
-  // console.log(await contentRoot.ownerToCollection(ownerId));
+  const ownerId = "123";
+  const tx = await contentRoot.createCollection(ownerId, "Name", "NAME");
+  console.log({ tx });
+  const a = await tx.wait();
 
-  console.log(`Collection of owner ${ownerId} deleted`);
+  console.log({ a });
+  console.log(`Collection deployed`);
 }
 
 main().catch((error) => {

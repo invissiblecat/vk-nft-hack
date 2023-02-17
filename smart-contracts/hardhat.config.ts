@@ -19,7 +19,7 @@ const config: HardhatUserConfig = {
       accounts: { count: 20 },
     },
     testnet_bnb: {
-      url: process.env.TESTNET_BNB || "",
+      url: process.env.JSON_RPC || "",
       accounts: [process.env.PRIVATE_KEY_TESTNET || ""],
     },
   },
