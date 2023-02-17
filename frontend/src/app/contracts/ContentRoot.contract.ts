@@ -1,4 +1,4 @@
-import ContentRootAbi from '../../../../abi/ContentRoot.json';
+import ContentRootAbi from '../abi/ContentRoot.json';
 import { ContentRoot } from '../abi/types';
 import { walletService } from '../services';
 import { CollectionCreate } from '../types';

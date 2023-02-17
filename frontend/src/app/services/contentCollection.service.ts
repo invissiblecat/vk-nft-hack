@@ -1,21 +1,27 @@
-import { CONTENT_COLLECTION_ADDRESSES_MAP } from '../../shared';
+import { BigNumber } from 'ethers';
+
 import { contentCollectionContract } from '../contracts';
-import { ChainId } from '../enums';
 import { nftCreateBackend, nftCreateContract } from '../types';
 import { apiService } from './api.service';
 
-type Req = Omit<nftCreateBackend, 'tokenId'> & nftCreateContract & { file?: File }
+type Req = Omit<nftCreateBackend, 'tokenId'> & nftCreateContract & { file?: File, address: string; }
 
 class ContentCollectionService {
-  async createNft({ initialWhitelistMembers, whitelistPlaces, file, ...reqBackend }: Req) {
+  async createNft({ address, initialWhitelistMembers, whitelistPlaces, file, ...reqBackend }: Req) {
     const tx = await contentCollectionContract.createNft({
-      address: CONTENT_COLLECTION_ADDRESSES_MAP[ChainId.BINANCE_TESTNET],
+      address,
       content: { whitelistPlaces, initialWhitelistMembers },
     });
     const { events } = await tx.wait();
-    console.log(events);
+    if (!events) throw new Error('Ошибка: events not found');
 
-    await apiService.createNft({ ...reqBackend, tokenId: '0' });
+    const [{ topics }] = events;
+
+    if (!topics.length) throw new Error('Ошибка: topics not found');
+
+    const tokenIdBN = BigNumber.from(topics[topics.length - 1]);
+
+    await apiService.createNft({ ...reqBackend, tokenId: tokenIdBN.toString() });
     console.log(file);
 
     // TODO: fix

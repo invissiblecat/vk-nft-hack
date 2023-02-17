@@ -26,6 +26,7 @@ export const CreateContentModal: React.FC<Pick<ModalPageProps, 'nav'>> = observe
     if (!collectionStore.data) return snackbarStore.setErrorSnackbar('Коллекция не найдена');
 
     contentStore.requestCreate({
+      address: collectionStore.data,
       whitelistPlaces: (whitelistPlaces || constants.MaxUint256).toString(),
       initialWhitelistMembers: addresses.map(({ value }) => value?.toString()).filter(Boolean) as string[],
       collectionAddress: collectionStore.data,

@@ -1,4 +1,4 @@
-import ContentCollectionAbi from '../../../../abi/ContentCollection.json';
+import ContentCollectionAbi from '../abi/ContentCollection.json';
 import { ContentCollection } from '../abi/types';
 import { walletService } from '../services';
 import { nftCreateContract } from '../types';
