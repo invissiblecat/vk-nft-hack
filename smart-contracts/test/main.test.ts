@@ -1,8 +1,6 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { ContractAddressOrInstance } from "@openzeppelin/hardhat-upgrades/dist/utils";
 import { expect } from "chai";
-import { BigNumber } from "ethers";
-import { formatUnits, parseUnits } from "ethers/lib/utils";
+import { BigNumber, Contract } from "ethers";
 import { ethers } from "hardhat";
 import { ContentCollection, ContentRoot } from "../typechain-types";
 

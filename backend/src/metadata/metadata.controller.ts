@@ -5,12 +5,14 @@ import {
   Post,
   Response,
   UnprocessableEntityException,
+  UseGuards,
 } from '@nestjs/common';
 import { MetadataService } from './metadata.service';
 import { CreateMetadataDto } from './dto/create-metadata.dto';
 import { Metadata } from '../schemas/metadata.schema';
-import { CheckSignature } from 'src/signature/signature.guard';
 import { CollectionService } from 'src/collection/collection.service';
+import { CheckCollectionOwner } from 'src/guards/guards';
+import { isAddress } from 'ethers/lib/utils';
 
 @Controller('metadata')
 export class MetadataController {
@@ -20,17 +22,19 @@ export class MetadataController {
   ) {}
 
   @Post()
-  @CheckSignature()
-  async create(@Response() res, @Body() createMetadataDto: CreateMetadataDto) {
-    console.log({ u: res.req.user });
-
+  @CheckCollectionOwner()
+  async create(@Body() createMetadataDto: CreateMetadataDto) {
     const { collectionAddress, ownerId, ...data } = createMetadataDto;
     try {
       let collection = await this.collectionService.findOne({
         collectionAddress,
       });
-      //todo check is correct address
       if (!collection) {
+        if (!isAddress(collectionAddress)) {
+          throw new UnprocessableEntityException(
+            `Collection address is not correct`,
+          );
+        }
         collection = await this.collectionService.create({
           collectionAddress,
           ownerId,

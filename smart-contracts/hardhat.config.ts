@@ -23,6 +23,9 @@ const config: HardhatUserConfig = {
       accounts: [process.env.PRIVATE_KEY_TESTNET || ""],
     },
   },
+  // typechain: {
+  //   outDir: "../typechain-types",
+  // },
 };
 
 export default config;

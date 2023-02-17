@@ -1,9 +1,10 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { isAddress, verifyMessage } from 'ethers';
 import { Strategy } from 'passport-custom';
+import { ethers } from 'ethers';
+import { isAddress, verifyMessage } from 'ethers/lib/utils';
 
-export const messageToSign = '123'; //todo make dynamic message
+export const messageToSign = 'sign message'; //todo make dynamic message
 
 @Injectable()
 export class SignatureStrategy extends PassportStrategy(Strategy, 'signature') {
