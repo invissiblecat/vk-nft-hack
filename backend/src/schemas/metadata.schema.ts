@@ -7,7 +7,7 @@ export type MetadataDocument = HydratedDocument<Metadata>;
 
 @Schema()
 export class Metadata {
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true })
   tokenId: string;
 
   @Prop({

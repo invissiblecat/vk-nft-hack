@@ -53,13 +53,15 @@ export class MetadataService {
     data: UpdateMetadataDto,
     applicationIds: string[] = [],
   ): Promise<MetadataDocument> {
+    if (applicationIds.length) {
+      await this.metadataModel.findByIdAndUpdate(id, {
+        $push: { applications: [applicationIds] },
+      });
+    }
     return this.metadataModel
-      .findByIdAndUpdate(
-        id,
-        { $set: data, $push: { applications: [applicationIds] } },
-        { new: true },
-      )
-      .populate('nftCollection');
+      .findByIdAndUpdate(id, { $set: data }, { new: true })
+      .populate('nftCollection')
+      .populate('applications');
   }
 
   makeFileName(tokenId: string, originalName: string) {

@@ -40,13 +40,39 @@ export class ContractsService {
     ) as ContentCollection;
   }
 
-  async getCollectionAddress(ownerId: string) {
+  async getCollectionAddress(ownerId: number) {
     await this.init();
-    return this.contentRootContract.ownerIdToCollection(+ownerId);
+    return this.contentRootContract.ownerIdToCollection(ownerId);
   }
 
-  async getCollectionOwner(collectionAddress: string) {
+  async getCollectionOwner({
+    collectionAddress,
+    ownerId,
+  }: {
+    collectionAddress?: string;
+    ownerId?: number;
+  }) {
+    if (!collectionAddress) {
+      collectionAddress = await this.getCollectionAddress(ownerId);
+    }
     const collection = await this.getCollectionContract(collectionAddress);
     return collection.owner();
+  }
+
+  async isCollectionOwner(
+    userAddress: string,
+    {
+      collectionAddress,
+      ownerId,
+    }: {
+      collectionAddress?: string;
+      ownerId?: number;
+    },
+  ) {
+    const collectionOwner = await this.getCollectionOwner({
+      collectionAddress,
+      ownerId,
+    });
+    return collectionOwner.toLowerCase() === userAddress.toLowerCase();
   }
 }

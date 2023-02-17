@@ -1,11 +1,12 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   NotFoundException,
-  Param,
   Post,
   Query,
+  Request,
   Res,
   UploadedFile,
   UseInterceptors,
@@ -21,17 +22,23 @@ import { MetadataImageDto } from './dto/upload-image-dto';
 import { existsSync, mkdirSync, unlinkSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import { Response } from 'express';
+import { CheckSignature } from 'src/guards/guards';
+import { ContractsService } from 'src/contracts/contracts.service';
 const Jimp = require('jimp');
 
 @Controller('metadata-images')
 export class MetadataImagesController {
-  constructor(private readonly metadataService: MetadataService) {
+  constructor(
+    private readonly metadataService: MetadataService,
+    private readonly contractsService: ContractsService,
+  ) {
     if (!existsSync(DEAFULT_IMAGES_PATH)) {
       mkdirSync(DEAFULT_IMAGES_PATH);
     }
   }
 
   @Post('uploadImage')
+  @CheckSignature()
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -48,11 +55,22 @@ export class MetadataImagesController {
     },
   })
   @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(@Body() body: MetadataImageDto, @UploadedFile('file') file) {
+  async uploadFile(
+    @Request() req,
+    @Body() body: MetadataImageDto,
+    @UploadedFile('file') file,
+  ) {
     const tokenMetadata = await this.metadataService.findOne({
       tokenId: body.tokenId,
     });
     checkMetadataOrThrow(tokenMetadata, body.tokenId);
+
+    const isOwner = await this.contractsService.isCollectionOwner(req.user, {
+      collectionAddress: tokenMetadata.nftCollection.collectionAddress,
+    });
+    if (!isOwner) {
+      throw new ForbiddenException('access denied');
+    }
 
     if (tokenMetadata.pathToImage) {
       unlinkSync(tokenMetadata.pathToImage);
