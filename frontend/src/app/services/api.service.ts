@@ -1,30 +1,30 @@
 import axios, { AxiosInstance } from 'axios';
 
-import { signatureService } from './signature.service';
+import { nftCreateBackend } from '../types';
 
 class ApiService {
   private _instance: AxiosInstance;
 
   constructor() {
     this._instance = axios.create({
-      baseURL: 'https://user151920325-4ppez4i6.wormhole.vk-apps.com/api',
+      baseURL: 'https://user151920325-feb4xxq3.wormhole.vk-apps.com/api',
     });
-    this._initInterceptor();
   }
 
-  private _initInterceptor = () => {
+  setAuthHeader(signature: string) {
     this._instance.interceptors.request.use((config) => {
-      if (signatureService.signature) {
-        config.headers.set('Authorization', signatureService.signature);
-      }
+      config.headers.set('Authorization', signature);
 
       return config;
     });
-  };
+  }
 
-  login = async (signature: string) => {
-    const { data } = await this._instance.post('/users/login', { signature });
-    signatureService.setSignature(data);
+  removeAuthHeader() {
+    this._instance.interceptors.request.clear();
+  }
+
+  createNft = async (body: nftCreateBackend) => {
+    await this._instance.post<void>('/metadata', body);
   };
 }
 

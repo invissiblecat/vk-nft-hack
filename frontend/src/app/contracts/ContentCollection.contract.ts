@@ -1,7 +1,7 @@
 import ContentCollectionAbi from '../abi/ContentCollection.json';
 import { ContentCollection } from '../abi/types';
 import { walletService } from '../services';
-import { ContentCreate } from '../types';
+import { nftCreateContract } from '../types';
 import { Contract } from './contract';
 
 class ContentCollectionContract extends Contract {
@@ -19,7 +19,7 @@ class ContentCollectionContract extends Contract {
     content: { whitelistPlaces, initialWhitelistMembers },
   }: {
     address: string,
-    content: ContentCreate
+    content: nftCreateContract
   }) {
     const contract = this._getContract<ContentCollection>(address);
     return contract.connect(walletService.signer!).createNft(1, whitelistPlaces, initialWhitelistMembers);

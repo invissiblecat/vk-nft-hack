@@ -1,38 +1,44 @@
 import { back } from '@cteamdev/router';
-import { Button, FormItem, FormLayout, Input, ModalCard, ModalPageProps } from '@vkontakte/vkui';
+import { Icon16Clear } from '@vkontakte/icons';
+import { Button, ChipsInput, FormItem, FormLayout, IconButton, Input, ModalCard, ModalPageProps, Textarea } from '@vkontakte/vkui';
+import { ChipOption } from '@vkontakte/vkui/dist/components/Chip/Chip';
+import { constants } from 'ethers';
 import { observer } from 'mobx-react-lite';
-import React, { useState } from 'react';
+import React, { MouseEventHandler, useState } from 'react';
 
-import { ChainId } from '../../../app/enums';
-import { CONTENT_ROOT_ADDRESSES_MAP, useStores } from '../../../shared';
+import { useStores } from '../../../shared';
 
-export const CreateCollectionModal: React.FC<Pick<ModalPageProps, 'nav'>> = observer(({ nav }) => {
-  const { userStore, snackbarStore, collectionStore } = useStores();
-  const [error, setError] = useState({
-    collectionName: false,
-    collectionSymbol: false,
-  });
-  const [collectionName, setCollectionName] = useState<string>('');
-  const [collectionSymbol, setCollectionSymbol] = useState<string>('');
+export const CreateContentModal: React.FC<Pick<ModalPageProps, 'nav'>> = observer(({ nav }) => {
+  const { /* userStore, */ snackbarStore, contentStore, collectionStore } = useStores();
+  const [whitelistPlaces, setWhitelistPlaces] = useState(0);
+  const [addresses, setAddresses] = useState<ChipOption[]>([]);
+  const [tokenDescription, setTokenDescription] = useState('');
+  const [link, setLink] = useState<string>('');
+  const [text, setText] = useState<string>('');
 
-  const createCollection = () => {
-    if (!userStore.data?.id) return snackbarStore.setErrorSnackbar('Пользователь не найден');
+  const clearAddresses: MouseEventHandler = (e) => {
+    e.stopPropagation();
+    setAddresses([]);
+  };
 
-    collectionStore.requestCreate({
-      address: CONTENT_ROOT_ADDRESSES_MAP[ChainId.BINANCE_TESTNET],
-      collection: { vkId: userStore.data.id, collectionName, collectionSymbol },
+  const createContent = () => {
+    // if (!userStore.data?.id) return snackbarStore.setErrorSnackbar('Пользователь не найден');
+    if (!collectionStore.data) return snackbarStore.setErrorSnackbar('Коллекция не найдена');
+
+    contentStore.requestCreate({
+      whitelistPlaces: (whitelistPlaces || constants.MaxUint256).toString(),
+      initialWhitelistMembers: addresses.map(({ value }) => value?.toString()).filter(Boolean) as string[],
+      collectionAddress: collectionStore.data,
+      // ownerId: userStore.data?.id,
+      ownerId: 67135042,
+      tokenDescription,
+      link,
+      text,
     });
   };
 
   const onSubmit = () => {
-    if (!collectionName || !collectionSymbol) {
-      return setError({
-        collectionName: !collectionName,
-        collectionSymbol: !collectionSymbol,
-      });
-    }
-
-    createCollection();
+    createContent();
     back();
   };
 
@@ -45,27 +51,43 @@ export const CreateCollectionModal: React.FC<Pick<ModalPageProps, 'nav'>> = obse
           Создать
         </Button>
       }
-      header="Создание коллекции"
+      header="Создание NFT"
     >
-
       <FormLayout onSubmit={onSubmit}>
-        <FormItem top="Название" status={error.collectionName ? 'error' : 'default'}>
+        <FormItem top="Максимум пользователей">
           <Input
-            value={collectionName}
-            onChange={({ target }) => {
-              setCollectionName(target.value);
-              setError((state) => ({ ...state, collectionName: false }));
-            }
-            }
+            type="number"
+            value={whitelistPlaces}
+            onChange={({ target }) => setWhitelistPlaces(+target.value)}
           />
         </FormItem>
-        <FormItem top="Символ" status={error.collectionSymbol ? 'error' : 'default'}>
+        <FormItem top="Адреса пользователей">
+          <ChipsInput
+            onChange={setAddresses}
+            value={addresses}
+            after={
+              <IconButton hoverMode="opacity" aria-label="Очистить поле" onClick={clearAddresses}>
+                <Icon16Clear />
+              </IconButton>
+              }
+          />
+        </FormItem>
+        <FormItem top="Краткое Описание">
+          <Textarea
+            value={tokenDescription}
+            onChange={({ target }) => setTokenDescription(target.value)}
+          />
+        </FormItem>
+        <FormItem top="Полное Описание">
+          <Textarea
+            value={text}
+            onChange={({ target }) => setText(target.value)}
+          />
+        </FormItem>
+        <FormItem top="Ссылка">
           <Input
-            value={collectionSymbol}
-            onChange={({ target }) => {
-              setCollectionSymbol(target.value);
-              setError((state) => ({ ...state, collectionSymbol: false }));
-            }}
+            value={link}
+            onChange={({ target }) => setLink(target.value)}
           />
         </FormItem>
       </FormLayout>

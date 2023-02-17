@@ -2,12 +2,11 @@ import { constants } from 'ethers';
 import { makeAutoObservable } from 'mobx';
 
 import { Store, storeRequest, storeReset } from '../../shared';
-import { contentCollectionContract } from '../contracts';
 import { contentCollectionService } from '../services';
 import { SnackbarStore } from './Snackbar.store';
 
 // type GetReq = Parameters<typeof contentCollectionContract.collection>
-type CreateReq = Parameters<typeof contentCollectionContract.createNft>
+type CreateReq = Parameters<typeof contentCollectionService.createNft>
 
 export class ContentStore implements Store<string> {
   isLoading = false;

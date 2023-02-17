@@ -3,8 +3,7 @@ import { Button, FormItem, FormLayout, Input, ModalCard, ModalPageProps } from '
 import { observer } from 'mobx-react-lite';
 import React, { useState } from 'react';
 
-import { ChainId } from '../../../app/enums';
-import { CONTENT_ROOT_ADDRESSES_MAP, useStores } from '../../../shared';
+import { useStores } from '../../../shared';
 
 export const CreateCollectionModal: React.FC<Pick<ModalPageProps, 'nav'>> = observer(({ nav }) => {
   const { userStore, snackbarStore, collectionStore } = useStores();
@@ -18,10 +17,7 @@ export const CreateCollectionModal: React.FC<Pick<ModalPageProps, 'nav'>> = obse
   const createCollection = () => {
     if (!userStore.data?.id) return snackbarStore.setErrorSnackbar('Пользователь не найден');
 
-    collectionStore.requestCreate({
-      address: CONTENT_ROOT_ADDRESSES_MAP[ChainId.BINANCE_TESTNET],
-      collection: { vkId: userStore.data.id, collectionName, collectionSymbol },
-    });
+    collectionStore.requestCreate({ vkId: userStore.data.id, collectionName, collectionSymbol });
   };
 
   const onSubmit = () => {

@@ -4,7 +4,7 @@ import Web3Modal, { IProviderOptions } from 'web3modal';
 
 import { NODES_MAP, SIGNATURE_MESSAGE, switchNetwork } from '../../shared';
 import { Connector } from '../enums';
-import { signatureService } from './signature.service';
+import { apiService } from './api.service';
 
 type EventHandler<T> = (arg0: T) => Promise<void>;
 const eventHandler = async () => undefined;
@@ -79,7 +79,7 @@ class WalletService {
       await this.web3ModalProvider.disconnect();
     }
 
-    signatureService.reset();
+    apiService.removeAuthHeader();
     await this.handleDisconnect(error);
   }
 
@@ -89,8 +89,7 @@ class WalletService {
 
       const signature = await this.signer.signMessage(SIGNATURE_MESSAGE);
 
-      signatureService.setSignature(signature);
-      // await apiService.login(signature);
+      apiService.setAuthHeader(signature);
 
       return this.address;
     } catch (err) {

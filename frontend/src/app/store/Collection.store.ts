@@ -7,7 +7,7 @@ import { contentRootService } from '../services';
 import { SnackbarStore } from './Snackbar.store';
 
 type GetReq = Parameters<typeof contentRootContract.collection>
-type CreateReq = Parameters<typeof contentRootContract.createCollection>
+type CreateReq = Parameters<typeof contentRootService.createCollection>
 
 export class CollectionStore implements Store<string> {
   isLoading = false;

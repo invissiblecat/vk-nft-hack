@@ -8,16 +8,7 @@ import { Loader } from '../features';
 import { CONTENT_ROOT_ADDRESSES_MAP, openModalCallback, useStores } from '../shared';
 
 export const CreatePage: React.FC = observer(() => {
-  const { collectionStore, userStore, snackbarStore } = useStores();
-
-  const createCollection = () => {
-    if (!userStore.data?.id) return snackbarStore.setErrorSnackbar('Пользователь не найден');
-
-    collectionStore.requestCreate({
-      address: CONTENT_ROOT_ADDRESSES_MAP[ChainId.BINANCE_TESTNET],
-      collection: { vkId: userStore.data.id, collectionName: 'testName', collectionSymbol: 'testSymbol' },
-    });
-  };
+  const { collectionStore, contentStore, userStore } = useStores();
 
   useEffect(() => {
     if (!userStore.data) return;
@@ -36,9 +27,12 @@ export const CreatePage: React.FC = observer(() => {
         <SimpleCell style={{ pointerEvents: 'none' }}>
           Тут вы можете создать приватный контент
         </SimpleCell>
-        <Loader isLoading={collectionStore.isLoading}>
+        <Loader isLoading={collectionStore.isLoading || contentStore.isLoading}>
           {collectionStore.data ? (
-            <CellButton before={<Icon28FavoriteAddOutline />} onClick={createCollection}>
+            <CellButton
+              before={<Icon28FavoriteAddOutline />}
+              onClick={openModalCallback(Route.CREATE, ModalRoute.CREATE_CONTENT)}
+            >
               Создать приватный контент
             </CellButton>
           ) : (
