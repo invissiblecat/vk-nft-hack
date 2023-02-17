@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Contract, ethers } from 'ethers';
+import { collectionAbi } from 'src/abi/collection.abi';
+import { rootAbi } from 'src/abi/root.abi';
 import { ContentCollection, ContentRoot } from 'src/abi/types';
-import CollectionAbi from './ContentCollection.json';
-import ContentRootAbi from './ContentRoot.json';
+
 @Injectable()
 export class ContractsService {
   private contentRootContract: ContentRoot;
@@ -17,13 +18,13 @@ export class ContractsService {
     if (this.inited) return;
     const contractAddress = process.env.CONTENT_ROOT_ADDRESS;
     const rpcNodeUrl = process.env.JSON_RPC;
-    console.log({ contractAddress, rpcNodeUrl, ContentRootAbi, CollectionAbi });
+    console.log({ contractAddress, rpcNodeUrl, rootAbi, collectionAbi });
 
     if (!contractAddress || !rpcNodeUrl) return;
     this.provider = new ethers.providers.JsonRpcProvider(rpcNodeUrl);
     this.contentRootContract = new Contract(
       contractAddress,
-      ContentRootAbi,
+      rootAbi,
       this.provider,
     ) as ContentRoot;
     this.inited = true;
@@ -34,7 +35,7 @@ export class ContractsService {
 
     return new Contract(
       collectionAddress,
-      CollectionAbi,
+      collectionAbi,
       this.provider,
     ) as ContentCollection;
   }
