@@ -17,7 +17,11 @@ export const CreateCollectionModal: React.FC<Pick<ModalPageProps, 'nav'>> = obse
   const createCollection = () => {
     if (!userStore.data?.id) return snackbarStore.setErrorSnackbar('Пользователь не найден');
 
-    collectionStore.requestCreate({ vkId: userStore.data.id, collectionName, collectionSymbol });
+    collectionStore.requestCreate({
+      vkId: userStore.data?.id,
+      collectionName,
+      collectionSymbol,
+    });
   };
 
   const onSubmit = () => {

@@ -10,7 +10,7 @@
     "predeploy": "yarn run build",
     "deploy": "vk-miniapps-deploy",
     "tunnel": "vk-tunnel --insecure=1 --http-protocol=https --ws-protocol=wss --host=0.0.0.0 --port=10888",
-    "typechain": "typechain --out-dir src/app/abi/types --target=ethers-v5 \"src/app/abi/*.json\""
+    "typechain": "typechain --out-dir src/app/abi/types --target=ethers-v5 \"../abi/*.json\""
   },
   "devDependencies": {
     "@typechain/ethers-v5": "^10.2.0",

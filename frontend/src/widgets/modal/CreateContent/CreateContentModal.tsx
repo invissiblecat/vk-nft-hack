@@ -9,7 +9,7 @@ import React, { MouseEventHandler, useState } from 'react';
 import { useStores } from '../../../shared';
 
 export const CreateContentModal: React.FC<Pick<ModalPageProps, 'nav'>> = observer(({ nav }) => {
-  const { /* userStore, */ snackbarStore, contentStore, collectionStore } = useStores();
+  const { userStore, snackbarStore, contentStore, collectionStore } = useStores();
   const [whitelistPlaces, setWhitelistPlaces] = useState(0);
   const [addresses, setAddresses] = useState<ChipOption[]>([]);
   const [tokenDescription, setTokenDescription] = useState('');
@@ -22,15 +22,15 @@ export const CreateContentModal: React.FC<Pick<ModalPageProps, 'nav'>> = observe
   };
 
   const createContent = () => {
-    // if (!userStore.data?.id) return snackbarStore.setErrorSnackbar('Пользователь не найден');
+    if (!userStore.data?.id) return snackbarStore.setErrorSnackbar('Пользователь не найден');
     if (!collectionStore.data) return snackbarStore.setErrorSnackbar('Коллекция не найдена');
 
     contentStore.requestCreate({
       whitelistPlaces: (whitelistPlaces || constants.MaxUint256).toString(),
       initialWhitelistMembers: addresses.map(({ value }) => value?.toString()).filter(Boolean) as string[],
       collectionAddress: collectionStore.data,
-      // ownerId: userStore.data?.id,
-      ownerId: 67135042,
+      ownerId: userStore.data?.id,
+      // ownerId: 67135042,
       tokenDescription,
       link,
       text,

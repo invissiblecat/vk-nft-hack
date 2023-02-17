@@ -1,4 +1,4 @@
-import ContentRootAbi from '../abi/ContentRoot.json';
+import ContentRootAbi from '../../../../abi/ContentRoot.json';
 import { ContentRoot } from '../abi/types';
 import { walletService } from '../services';
 import { CollectionCreate } from '../types';
@@ -11,7 +11,7 @@ class ContentRootContract extends Contract {
 
   collection({ vkId, address }: { vkId: number; address: string }) {
     const contract = this._getContract<ContentRoot>(address);
-    return contract.ownerToCollection(vkId);
+    return contract.ownerIdToCollection(vkId);
   }
 
   createCollection({
