@@ -5,7 +5,8 @@
     "t": "hardhat test",
     "test": "yarn t",
     "bnb_deploy-content-root": "hardhat run ./scripts/deploy-collection-root.ts --network testnet_bnb",
-    "bnb_delete-coll": "hardhat run ./scripts/delete-collection.ts --network testnet_bnb"
+    "bnb_delete-coll": "hardhat run ./scripts/delete-collection.ts --network testnet_bnb",
+    "bnb_create_coll_and_nft": "hardhat run ./scripts/create-collection.ts --network testnet_bnb && hardhat run ./scripts/create-nft.ts --network testnet_bnb"
   },
   
   "dependencies": {

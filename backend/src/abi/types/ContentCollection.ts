@@ -33,17 +33,17 @@ export interface ContentCollectionInterface extends utils.Interface {
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
     "changeRemainingWhitelistPlaces(uint256,uint256)": FunctionFragment;
-    "createNft(uint256,uint256,address[])": FunctionFragment;
+    "createNft(uint256,address[])": FunctionFragment;
     "deleteWhitelistMembers(uint256,address[])": FunctionFragment;
     "getAccess(uint256,address)": FunctionFragment;
     "getApproved(uint256)": FunctionFragment;
     "getDeployer()": FunctionFragment;
     "isAdmin(address)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
+    "lastCreatedTokenId(address)": FunctionFragment;
     "name()": FunctionFragment;
     "owner()": FunctionFragment;
     "ownerOf(uint256)": FunctionFragment;
-    "remainingWhitelistPlaces(uint256)": FunctionFragment;
     "removeAdmins(address[])": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
     "safeTransferFrom(address,address,uint256)": FunctionFragment;
@@ -52,9 +52,13 @@ export interface ContentCollectionInterface extends utils.Interface {
     "setWhitelistMembers(uint256,address[])": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "symbol()": FunctionFragment;
+    "tokenByIndex(uint256)": FunctionFragment;
+    "tokenOfOwnerByIndex(address,uint256)": FunctionFragment;
     "tokenURI(uint256)": FunctionFragment;
+    "totalSupply()": FunctionFragment;
     "transferFrom(address,address,uint256)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
+    "whitelistLimits(uint256)": FunctionFragment;
   };
 
   getFunction(
@@ -70,10 +74,10 @@ export interface ContentCollectionInterface extends utils.Interface {
       | "getDeployer"
       | "isAdmin"
       | "isApprovedForAll"
+      | "lastCreatedTokenId"
       | "name"
       | "owner"
       | "ownerOf"
-      | "remainingWhitelistPlaces"
       | "removeAdmins"
       | "renounceOwnership"
       | "safeTransferFrom(address,address,uint256)"
@@ -82,9 +86,13 @@ export interface ContentCollectionInterface extends utils.Interface {
       | "setWhitelistMembers"
       | "supportsInterface"
       | "symbol"
+      | "tokenByIndex"
+      | "tokenOfOwnerByIndex"
       | "tokenURI"
+      | "totalSupply"
       | "transferFrom"
       | "transferOwnership"
+      | "whitelistLimits"
   ): FunctionFragment;
 
   encodeFunctionData(
@@ -105,11 +113,7 @@ export interface ContentCollectionInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "createNft",
-    values: [
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<string>[]
-    ]
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<string>[]]
   ): string;
   encodeFunctionData(
     functionFragment: "deleteWhitelistMembers",
@@ -135,14 +139,14 @@ export interface ContentCollectionInterface extends utils.Interface {
     functionFragment: "isApprovedForAll",
     values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
+  encodeFunctionData(
+    functionFragment: "lastCreatedTokenId",
+    values: [PromiseOrValue<string>]
+  ): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "ownerOf",
-    values: [PromiseOrValue<BigNumberish>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "remainingWhitelistPlaces",
     values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
@@ -184,8 +188,20 @@ export interface ContentCollectionInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
   encodeFunctionData(
+    functionFragment: "tokenByIndex",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "tokenOfOwnerByIndex",
+    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "tokenURI",
     values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "totalSupply",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "transferFrom",
@@ -198,6 +214,10 @@ export interface ContentCollectionInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "transferOwnership",
     values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "whitelistLimits",
+    values: [PromiseOrValue<BigNumberish>]
   ): string;
 
   decodeFunctionResult(functionFragment: "addAdmins", data: BytesLike): Result;
@@ -226,13 +246,13 @@ export interface ContentCollectionInterface extends utils.Interface {
     functionFragment: "isApprovedForAll",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "lastCreatedTokenId",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "ownerOf", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "remainingWhitelistPlaces",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "removeAdmins",
     data: BytesLike
@@ -262,13 +282,29 @@ export interface ContentCollectionInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "tokenByIndex",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "tokenOfOwnerByIndex",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "tokenURI", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "totalSupply",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "transferFrom",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "transferOwnership",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "whitelistLimits",
     data: BytesLike
   ): Result;
 
@@ -424,8 +460,7 @@ export interface ContentCollection extends BaseContract {
     ): Promise<ContractTransaction>;
 
     createNft(
-      tokenId: PromiseOrValue<BigNumberish>,
-      whitelistPlaces: PromiseOrValue<BigNumberish>,
+      whitelistLimit: PromiseOrValue<BigNumberish>,
       initialWhitelistMembers: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
@@ -460,6 +495,11 @@ export interface ContentCollection extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
+    lastCreatedTokenId(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
     name(overrides?: CallOverrides): Promise<[string]>;
 
     owner(overrides?: CallOverrides): Promise<[string]>;
@@ -468,11 +508,6 @@ export interface ContentCollection extends BaseContract {
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<[string]>;
-
-    remainingWhitelistPlaces(
-      arg0: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
 
     removeAdmins(
       addrs: PromiseOrValue<string>[],
@@ -517,10 +552,23 @@ export interface ContentCollection extends BaseContract {
 
     symbol(overrides?: CallOverrides): Promise<[string]>;
 
+    tokenByIndex(
+      index: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    tokenOfOwnerByIndex(
+      owner: PromiseOrValue<string>,
+      index: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
     tokenURI(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<[string]>;
+
+    totalSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     transferFrom(
       from: PromiseOrValue<string>,
@@ -533,6 +581,11 @@ export interface ContentCollection extends BaseContract {
       newOwner: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
+
+    whitelistLimits(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
   };
 
   addAdmins(
@@ -558,8 +611,7 @@ export interface ContentCollection extends BaseContract {
   ): Promise<ContractTransaction>;
 
   createNft(
-    tokenId: PromiseOrValue<BigNumberish>,
-    whitelistPlaces: PromiseOrValue<BigNumberish>,
+    whitelistLimit: PromiseOrValue<BigNumberish>,
     initialWhitelistMembers: PromiseOrValue<string>[],
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
@@ -594,6 +646,11 @@ export interface ContentCollection extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
+  lastCreatedTokenId(
+    arg0: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
   name(overrides?: CallOverrides): Promise<string>;
 
   owner(overrides?: CallOverrides): Promise<string>;
@@ -602,11 +659,6 @@ export interface ContentCollection extends BaseContract {
     tokenId: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
   ): Promise<string>;
-
-  remainingWhitelistPlaces(
-    arg0: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
 
   removeAdmins(
     addrs: PromiseOrValue<string>[],
@@ -651,10 +703,23 @@ export interface ContentCollection extends BaseContract {
 
   symbol(overrides?: CallOverrides): Promise<string>;
 
+  tokenByIndex(
+    index: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  tokenOfOwnerByIndex(
+    owner: PromiseOrValue<string>,
+    index: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
   tokenURI(
     tokenId: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
   ): Promise<string>;
+
+  totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
   transferFrom(
     from: PromiseOrValue<string>,
@@ -667,6 +732,11 @@ export interface ContentCollection extends BaseContract {
     newOwner: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
+
+  whitelistLimits(
+    arg0: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   callStatic: {
     addAdmins(
@@ -692,11 +762,10 @@ export interface ContentCollection extends BaseContract {
     ): Promise<void>;
 
     createNft(
-      tokenId: PromiseOrValue<BigNumberish>,
-      whitelistPlaces: PromiseOrValue<BigNumberish>,
+      whitelistLimit: PromiseOrValue<BigNumberish>,
       initialWhitelistMembers: PromiseOrValue<string>[],
       overrides?: CallOverrides
-    ): Promise<void>;
+    ): Promise<BigNumber>;
 
     deleteWhitelistMembers(
       tokenId: PromiseOrValue<BigNumberish>,
@@ -728,6 +797,11 @@ export interface ContentCollection extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
+    lastCreatedTokenId(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     name(overrides?: CallOverrides): Promise<string>;
 
     owner(overrides?: CallOverrides): Promise<string>;
@@ -736,11 +810,6 @@ export interface ContentCollection extends BaseContract {
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<string>;
-
-    remainingWhitelistPlaces(
-      arg0: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     removeAdmins(
       addrs: PromiseOrValue<string>[],
@@ -783,10 +852,23 @@ export interface ContentCollection extends BaseContract {
 
     symbol(overrides?: CallOverrides): Promise<string>;
 
+    tokenByIndex(
+      index: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    tokenOfOwnerByIndex(
+      owner: PromiseOrValue<string>,
+      index: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     tokenURI(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<string>;
+
+    totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferFrom(
       from: PromiseOrValue<string>,
@@ -799,6 +881,11 @@ export interface ContentCollection extends BaseContract {
       newOwner: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    whitelistLimits(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
   };
 
   filters: {
@@ -896,8 +983,7 @@ export interface ContentCollection extends BaseContract {
     ): Promise<BigNumber>;
 
     createNft(
-      tokenId: PromiseOrValue<BigNumberish>,
-      whitelistPlaces: PromiseOrValue<BigNumberish>,
+      whitelistLimit: PromiseOrValue<BigNumberish>,
       initialWhitelistMembers: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
@@ -932,17 +1018,17 @@ export interface ContentCollection extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    lastCreatedTokenId(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     name(overrides?: CallOverrides): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
     ownerOf(
       tokenId: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    remainingWhitelistPlaces(
-      arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -989,10 +1075,23 @@ export interface ContentCollection extends BaseContract {
 
     symbol(overrides?: CallOverrides): Promise<BigNumber>;
 
+    tokenByIndex(
+      index: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    tokenOfOwnerByIndex(
+      owner: PromiseOrValue<string>,
+      index: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     tokenURI(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferFrom(
       from: PromiseOrValue<string>,
@@ -1004,6 +1103,11 @@ export interface ContentCollection extends BaseContract {
     transferOwnership(
       newOwner: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    whitelistLimits(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
   };
 
@@ -1031,8 +1135,7 @@ export interface ContentCollection extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     createNft(
-      tokenId: PromiseOrValue<BigNumberish>,
-      whitelistPlaces: PromiseOrValue<BigNumberish>,
+      whitelistLimit: PromiseOrValue<BigNumberish>,
       initialWhitelistMembers: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
@@ -1067,17 +1170,17 @@ export interface ContentCollection extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    lastCreatedTokenId(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     ownerOf(
       tokenId: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    remainingWhitelistPlaces(
-      arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -1124,10 +1227,23 @@ export interface ContentCollection extends BaseContract {
 
     symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    tokenByIndex(
+      index: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    tokenOfOwnerByIndex(
+      owner: PromiseOrValue<string>,
+      index: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     tokenURI(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    totalSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     transferFrom(
       from: PromiseOrValue<string>,
@@ -1139,6 +1255,11 @@ export interface ContentCollection extends BaseContract {
     transferOwnership(
       newOwner: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    whitelistLimits(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };
 }

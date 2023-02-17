@@ -1,16 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { Contract, ethers } from 'ethers';
 import { ContentCollection, ContentRoot } from 'src/abi/types';
-import ContentRootAbi from '../../abi/ContentRoot.json';
-import CollectionAbi from '../../abi/ContentCollection.json';
+import CollectionAbi from './ContentCollection.json';
+import ContentRootAbi from './ContentRoot.json';
 @Injectable()
 export class ContractsService {
   private contentRootContract: ContentRoot;
-  private readonly provider: ethers.providers.JsonRpcProvider;
+  private provider: ethers.providers.JsonRpcProvider;
+  private inited = false;
 
   constructor() {
+    this.init();
+  }
+
+  async init() {
+    if (this.inited) return;
     const contractAddress = process.env.CONTENT_ROOT_ADDRESS;
     const rpcNodeUrl = process.env.JSON_RPC;
+    console.log({ contractAddress, rpcNodeUrl, ContentRootAbi, CollectionAbi });
+
     if (!contractAddress || !rpcNodeUrl) return;
     this.provider = new ethers.providers.JsonRpcProvider(rpcNodeUrl);
     this.contentRootContract = new Contract(
@@ -18,9 +26,12 @@ export class ContractsService {
       ContentRootAbi,
       this.provider,
     ) as ContentRoot;
+    this.inited = true;
   }
 
-  getCollectionContract(collectionAddress: string) {
+  async getCollectionContract(collectionAddress: string) {
+    await this.init();
+
     return new Contract(
       collectionAddress,
       CollectionAbi,
@@ -28,12 +39,13 @@ export class ContractsService {
     ) as ContentCollection;
   }
 
-  getCollectionAddress(ownerId: string) {
-    return this.contentRootContract.ownerToCollection(+ownerId);
+  async getCollectionAddress(ownerId: string) {
+    await this.init();
+    return this.contentRootContract.ownerIdToCollection(+ownerId);
   }
 
-  getCollectionOwner(collectionAddress: string) {
-    const collection = this.getCollectionContract(collectionAddress);
+  async getCollectionOwner(collectionAddress: string) {
+    const collection = await this.getCollectionContract(collectionAddress);
     return collection.owner();
   }
 }

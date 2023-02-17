@@ -76,7 +76,7 @@ const _abi = [
         type: "uint256",
       },
     ],
-    name: "ownerToCollection",
+    name: "ownerIdToCollection",
     outputs: [
       {
         internalType: "address",
