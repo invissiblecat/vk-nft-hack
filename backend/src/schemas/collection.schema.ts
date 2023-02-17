@@ -10,7 +10,7 @@ export class Collection {
   collectionAddress: string;
 
   @Prop({ required: true, unique: true })
-  ownerId: string;
+  ownerId: number;
 
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Metadata' }] })
   tokensMetadata: Metadata[];

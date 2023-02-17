@@ -31,6 +31,7 @@
     "@typechain/ethers-v5": "^10.1.1",
     "@typechain/hardhat": "^6.1.4",
     "@types/passport-local": "^1.0.35",
+    "dotenv": "^16.0.3",
     "ethers": "^5.7.2",
     "jimp": "^0.22.4",
     "mongoose": "^6.9.1",
