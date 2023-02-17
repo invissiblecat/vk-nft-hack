@@ -13,6 +13,9 @@ export class Metadata {
   nftCollection: Collection;
 
   @Prop()
+  tokenDescription?: string;
+
+  @Prop()
   link?: string;
 
   @Prop()
@@ -20,6 +23,9 @@ export class Metadata {
 
   @Prop()
   pathToImage?: string;
+
+  @Prop()
+  pathToPreview?: string;
 }
 
 export const MetadataSchema = SchemaFactory.createForClass(Metadata);

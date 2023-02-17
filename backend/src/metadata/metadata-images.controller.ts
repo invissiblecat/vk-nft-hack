@@ -21,6 +21,7 @@ import { MetadataImageDto } from './dto/upload-image-dto';
 import { existsSync, mkdirSync, unlinkSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import { Response } from 'express';
+const Jimp = require('jimp');
 
 @Controller('metadata-images')
 export class MetadataImagesController {
@@ -55,6 +56,7 @@ export class MetadataImagesController {
 
     if (tokenMetadata.pathToImage) {
       unlinkSync(tokenMetadata.pathToImage);
+      unlinkSync(tokenMetadata.pathToPreview);
     }
 
     const filePath = this.metadataService.makeFilePath(
@@ -64,12 +66,21 @@ export class MetadataImagesController {
 
     writeFileSync(filePath, file.buffer);
 
+    const previewPath = this.metadataService.makePreviewPath(
+      body.tokenId,
+      file.originalname,
+    );
+
+    const original = await Jimp.read(filePath);
+    original.blur(30).write(previewPath);
+
     await this.metadataService.updateById(tokenMetadata._id, {
       pathToImage: filePath,
+      pathToPreview: previewPath,
     });
   }
 
-  @Get('downloadImage')
+  @Get('downloadOriginalImage')
   async downloadFile(
     @Query('tokenId') tokenId: string,
     @Res() response: Response,
@@ -77,9 +88,26 @@ export class MetadataImagesController {
     const tokenMetadata = await this.metadataService.findOne({ tokenId });
     checkMetadataOrThrow(tokenMetadata, tokenId);
 
-    const resolvedPath = resolve(tokenMetadata.pathToImage); //todo why not save already resolved in db
+    const resolvedPath = resolve(tokenMetadata.pathToImage);
     if (!existsSync(resolvedPath)) {
       throw new NotFoundException(`Image for token ${tokenId} not found`);
+    }
+
+    response.download(resolvedPath);
+    return response;
+  }
+
+  @Get('downloadPreview')
+  async downloadPreview(
+    @Query('tokenId') tokenId: string,
+    @Res() response: Response,
+  ) {
+    const tokenMetadata = await this.metadataService.findOne({ tokenId });
+    checkMetadataOrThrow(tokenMetadata, tokenId);
+
+    const resolvedPath = resolve(tokenMetadata.pathToPreview);
+    if (!existsSync(resolvedPath)) {
+      throw new NotFoundException(`Preview for token ${tokenId} not found`);
     }
 
     response.download(resolvedPath);

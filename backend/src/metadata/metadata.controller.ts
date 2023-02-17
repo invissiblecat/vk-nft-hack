@@ -15,17 +15,18 @@ export class MetadataController {
   @Post()
   // @CheckSignature() todo
   async create(@Body() createMetadataDto: CreateMetadataDto) {
+    const { collectionAddress, ownerId, ...data } = createMetadataDto;
     let collection = await this.collectionService.findOne({
-      collectionAddress: createMetadataDto.collectionAddress,
+      collectionAddress,
     });
     //todo check is correct address
     if (!collection) {
       collection = await this.collectionService.create({
-        collectionAddress: createMetadataDto.collectionAddress,
+        collectionAddress,
+        ownerId,
       });
     }
 
-    const { collectionAddress, ...data } = createMetadataDto;
     const metadata = await this.metadataService.create({
       ...data,
       nftCollection: collection,

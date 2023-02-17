@@ -1,8 +1,7 @@
-import { FilterQuery, Model, Types, UpdateQuery } from 'mongoose';
+import { FilterQuery, Model, Types } from 'mongoose';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Metadata, MetadataDocument } from '../schemas/metadata.schema';
-import { CreateMetadataDto } from './dto/create-metadata.dto';
 import { UpdateMetadataDto } from './dto/update-metadata.dto';
 
 export const DEAFULT_IMAGES_PATH = 'images';
@@ -56,5 +55,14 @@ export class MetadataService {
 
   makeFilePath(tokenId: string, originalName: string) {
     return DEAFULT_IMAGES_PATH + '/' + this.makeFileName(tokenId, originalName);
+  }
+
+  makePreviewPath(tokenId: string, originalName: string) {
+    return (
+      DEAFULT_IMAGES_PATH +
+      '/' +
+      'preview-' +
+      this.makeFileName(tokenId, originalName)
+    );
   }
 }

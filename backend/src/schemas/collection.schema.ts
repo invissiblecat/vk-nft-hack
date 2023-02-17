@@ -9,6 +9,9 @@ export class Collection {
   @Prop({ required: true })
   collectionAddress: string;
 
+  @Prop({ required: true })
+  ownerId: string;
+
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Metadata' }] })
   tokensMetadata: Metadata;
 }

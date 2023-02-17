@@ -28,6 +28,7 @@
     "@nestjs/swagger": "^6.2.1",
     "@types/passport-local": "^1.0.35",
     "ethers": "^6.0.3",
+    "jimp": "^0.22.4",
     "mongoose": "^6.9.1",
     "passport": "^0.6.0",
     "passport-custom": "^1.1.1",
