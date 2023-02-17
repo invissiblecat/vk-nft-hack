@@ -9,9 +9,9 @@ export interface Store<Data = any> {
   snackbarStore: SnackbarStore
 }
 
-export const storeRequest = <Target extends Store<Data>, Data>(
-  target: Target,
-  request: Promise<Data>,
+export const storeRequest = <Data>(
+  target: Store<Data>,
+  request: Promise<Data | void>,
   callback: (data: Data) => void,
   successText?: string,
 ): void => {
@@ -22,8 +22,10 @@ export const storeRequest = <Target extends Store<Data>, Data>(
         action((data) => {
           if (target.isLoading) {
             target.isLoading = false;
-            callback(data);
           }
+          if (!data) return;
+
+          callback(data);
         }),
       ),
     )

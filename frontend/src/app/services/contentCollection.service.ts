@@ -1,12 +1,12 @@
 import { BigNumber } from 'ethers';
 
 import { contentCollectionContract } from '../contracts';
-import { nftCreateBackend, nftCreateContract } from '../types';
+import { ContentCreateBackend, ContentCreateContract } from '../types';
 import { apiService } from './api.service';
 
-type Req = Omit<nftCreateBackend, 'tokenId'> & nftCreateContract & { file?: File, address: string; }
+type Req = Omit<ContentCreateBackend, 'tokenId'> & ContentCreateContract & { file?: File, address: string; }
 
-class ContentCollectionService {
+class ContentService {
   async createNft({ address, initialWhitelistMembers, whitelistPlaces, file, ...reqBackend }: Req) {
     const tx = await contentCollectionContract.createNft({
       address,
@@ -23,11 +23,7 @@ class ContentCollectionService {
 
     await apiService.createNft({ ...reqBackend, tokenId: tokenIdBN.toString() });
     console.log(file);
-
-    // TODO: fix
-    // storeRequest ругается
-    return '';
   }
 }
 
-export const contentCollectionService = new ContentCollectionService();
+export const contentService = new ContentService();

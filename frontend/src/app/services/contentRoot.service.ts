@@ -10,10 +10,6 @@ class ContentRootService {
       collection,
     });
     await tx.wait();
-
-    // TODO: fix
-    // storeRequest ругается
-    return '';
   }
 }
 

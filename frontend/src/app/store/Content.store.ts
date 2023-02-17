@@ -1,21 +1,18 @@
-import { constants } from 'ethers';
 import { makeAutoObservable } from 'mobx';
 
 import { Store, storeRequest, storeReset } from '../../shared';
-import { contentCollectionService } from '../services';
+import { apiService, contentService } from '../services';
+import { Content } from '../types';
 import { SnackbarStore } from './Snackbar.store';
 
-// type GetReq = Parameters<typeof contentCollectionContract.collection>
-type CreateReq = Parameters<typeof contentCollectionService.createNft>
+type CreateReq = Parameters<typeof contentService.createNft>
 
-export class ContentStore implements Store<string> {
+export class ContentStore implements Store<Content[] | void | undefined> {
   isLoading = false;
 
   snackbarStore: SnackbarStore;
 
-  data?: string = undefined;
-
-  // req: GetReq = [{ address: '', vkId: 0 }];
+  data?: Content[] = undefined;
 
   constructor({ snackbarStore }: { snackbarStore: SnackbarStore }) {
     this.snackbarStore = snackbarStore;
@@ -24,9 +21,7 @@ export class ContentStore implements Store<string> {
     });
   }
 
-  setData(data: string) {
-    if (data === constants.AddressZero) return;
-
+  setData(data: Content[]) {
     this.data = data;
   }
 
@@ -40,17 +35,17 @@ export class ContentStore implements Store<string> {
   }
 
   request() {
-    // storeRequest(
-    //   this,
-    //   contentСollectionContract.collection(...this.req),
-    //   (data) => this.setData(data),
-    // );
+    storeRequest(
+      this,
+      apiService.getNftList(),
+      (data) => this.setData(data),
+    );
   }
 
   requestCreate(...req: CreateReq) {
     storeRequest(
       this,
-      contentCollectionService.createNft(...req),
+      contentService.createNft(...req),
       () => {
         this.reload();
         this.snackbarStore.setSuccessSnackbar('Контент создан');
@@ -58,8 +53,7 @@ export class ContentStore implements Store<string> {
     );
   }
 
-  activate(/* ...req: GetReq */) {
-    // this.req = req;
+  activate() {
     this.request();
   }
 

@@ -6,7 +6,7 @@ import React, { useEffect } from 'react';
 import { Route } from './app/enums';
 import { Providers } from './app/providers';
 import { Private } from './features';
-import { CreatePage, Home, Info, Persik } from './pages';
+import { CreatePage, Home, Info, Persik, PurchasedPage } from './pages';
 import { useStores } from './shared';
 import { Layout, Navigation } from './widgets';
 
@@ -23,6 +23,14 @@ export const App: React.FC = () => {
         <View nav={Route.ROOT}>
           <Layout nav={Route.ROOT}>
             <Home />
+          </Layout>
+          <Persik nav="/persik" />
+        </View>
+        <View nav={Route.PURCHASED}>
+          <Layout nav={Route.ROOT}>
+            <Private>
+              <PurchasedPage />
+            </Private>
           </Layout>
           <Persik nav="/persik" />
         </View>

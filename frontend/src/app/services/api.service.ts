@@ -1,13 +1,13 @@
 import axios, { AxiosInstance } from 'axios';
 
-import { nftCreateBackend } from '../types';
+import { Content, ContentCreateBackend } from '../types';
 
 class ApiService {
   private _instance: AxiosInstance;
 
   constructor() {
     this._instance = axios.create({
-      baseURL: 'https://user151920325-feb4xxq3.wormhole.vk-apps.com/api',
+      baseURL: '/api',
     });
   }
 
@@ -23,8 +23,14 @@ class ApiService {
     this._instance.interceptors.request.clear();
   }
 
-  createNft = async (body: nftCreateBackend) => {
+  createNft = async (body: ContentCreateBackend) => {
     await this._instance.post<void>('/metadata', body);
+  };
+
+  getNftList = async () => {
+    const { data } = await this._instance.get<Content[]>('/metadata');
+
+    return data;
   };
 }
 
