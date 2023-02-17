@@ -75,4 +75,13 @@ export class ContractsService {
     });
     return collectionOwner.toLowerCase() === userAddress.toLowerCase();
   }
+
+  async hasAccessToToken(
+    userAddress: string,
+    collectionAddress: string,
+    tokenId: string,
+  ) {
+    const collection = await this.getCollectionContract(collectionAddress);
+    return await collection.getAccess(tokenId, userAddress);
+  }
 }

@@ -1,4 +1,4 @@
-import { FilterQuery, Model, Types } from 'mongoose';
+import mongoose, { FilterQuery, Model, ProjectionType, Types } from 'mongoose';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Metadata, MetadataDocument } from '../schemas/metadata.schema';
@@ -41,9 +41,24 @@ export class MetadataService {
       .populate('applications');
   }
 
-  async findOne(filter: FilterQuery<Metadata>): Promise<MetadataDocument> {
+  async findOne(
+    filter: FilterQuery<Metadata>,
+    select?: Array<any>,
+  ): Promise<MetadataDocument> {
     return this.metadataModel
       .findOne(filter)
+      .select(select)
+      .populate('nftCollection')
+      .populate('applications');
+  }
+
+  async findMany(
+    filter: FilterQuery<Metadata>,
+    select?: Array<any>,
+  ): Promise<MetadataDocument[]> {
+    return this.metadataModel
+      .find(filter)
+      .select(select)
       .populate('nftCollection')
       .populate('applications');
   }

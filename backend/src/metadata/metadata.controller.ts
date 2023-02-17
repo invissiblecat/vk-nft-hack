@@ -2,7 +2,10 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
+  Query,
+  Request,
   Response,
   UnprocessableEntityException,
   UseGuards,
@@ -13,12 +16,14 @@ import { Metadata } from '../schemas/metadata.schema';
 import { CollectionService } from 'src/collection/collection.service';
 import { CheckCollectionOwner } from 'src/guards/guards';
 import { isAddress } from 'ethers/lib/utils';
+import { ContractsService } from 'src/contracts/contracts.service';
 
 @Controller('metadata')
 export class MetadataController {
   constructor(
     private readonly metadataService: MetadataService,
     private readonly collectionService: CollectionService,
+    private readonly contractsService: ContractsService,
   ) {}
 
   @Post()
@@ -58,5 +63,38 @@ export class MetadataController {
   @Get()
   async findAll(): Promise<Metadata[]> {
     return this.metadataService.findAll();
+  }
+
+  @Get(':tokenId')
+  async findFullOne(
+    @Request() req,
+    @Param('tokenId') tokenId: string,
+    @Query('collectionAddress') collectionAddress: string,
+  ): Promise<Metadata> {
+    const defaultMetadataExclude = ['-pathToImage', '-pathToPreview'];
+    const collection = await this.collectionService.findOne({
+      collectionAddress,
+    });
+    const hasAccess = this.contractsService.hasAccessToToken(
+      req.user,
+      collectionAddress,
+      tokenId,
+    );
+    if (hasAccess) {
+      return this.metadataService.findOne(
+        {
+          tokenId,
+          nftCollection: collection._id,
+        },
+        defaultMetadataExclude,
+      );
+    }
+    return this.metadataService.findOne(
+      {
+        tokenId,
+        nftCollection: collection._id,
+      },
+      ['-link', '-text', ...defaultMetadataExclude],
+    );
   }
 }

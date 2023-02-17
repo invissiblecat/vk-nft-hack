@@ -4,6 +4,7 @@ import {
   ForbiddenException,
   Get,
   NotFoundException,
+  Param,
   Post,
   Query,
   Request,
@@ -98,34 +99,32 @@ export class MetadataImagesController {
     });
   }
 
-  @Get('downloadOriginalImage')
+  @Get(':tokenId')
+  @CheckSignature()
   async downloadFile(
-    @Query('tokenId') tokenId: string,
+    @Request() req,
+    @Param('tokenId') tokenId: string,
+    @Query('collectionAddress') collectionAddress: string,
     @Res() response: Response,
   ) {
-    const tokenMetadata = await this.metadataService.findOne({ tokenId });
+    const tokenMetadatas = await this.metadataService.findMany({ tokenId });
+    const tokenMetadata = tokenMetadatas.find(
+      (metadata) =>
+        metadata.nftCollection.collectionAddress === collectionAddress,
+    );
     checkMetadataOrThrow(tokenMetadata, tokenId);
+    const hasAccess = await this.contractsService.hasAccessToToken(
+      req.user,
+      collectionAddress,
+      tokenId,
+    );
 
-    const resolvedPath = resolve(tokenMetadata.pathToImage);
+    let path = tokenMetadata.pathToPreview;
+    if (hasAccess) path = tokenMetadata.pathToImage;
+
+    const resolvedPath = resolve(path);
     if (!existsSync(resolvedPath)) {
       throw new NotFoundException(`Image for token ${tokenId} not found`);
-    }
-
-    response.download(resolvedPath);
-    return response;
-  }
-
-  @Get('downloadPreview')
-  async downloadPreview(
-    @Query('tokenId') tokenId: string,
-    @Res() response: Response,
-  ) {
-    const tokenMetadata = await this.metadataService.findOne({ tokenId });
-    checkMetadataOrThrow(tokenMetadata, tokenId);
-
-    const resolvedPath = resolve(tokenMetadata.pathToPreview);
-    if (!existsSync(resolvedPath)) {
-      throw new NotFoundException(`Preview for token ${tokenId} not found`);
     }
 
     response.download(resolvedPath);
