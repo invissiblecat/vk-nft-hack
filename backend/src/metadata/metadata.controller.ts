@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Post,
+  Response,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { MetadataService } from './metadata.service';
@@ -19,8 +20,10 @@ export class MetadataController {
   ) {}
 
   @Post()
-  // @CheckSignature() todo
-  async create(@Body() createMetadataDto: CreateMetadataDto) {
+  @CheckSignature()
+  async create(@Response() res, @Body() createMetadataDto: CreateMetadataDto) {
+    console.log({ u: res.req.user });
+
     const { collectionAddress, ownerId, ...data } = createMetadataDto;
     try {
       let collection = await this.collectionService.findOne({

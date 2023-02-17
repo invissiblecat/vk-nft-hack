@@ -10,7 +10,7 @@ export class SignatureStrategy extends PassportStrategy(Strategy, 'signature') {
   constructor() {
     super();
   }
-  async validate(req: Request): Promise<any> {
+  async validate(req: Request): Promise<string> {
     const headers: any = req.headers;
     const signature: string = headers.authorization;
 
