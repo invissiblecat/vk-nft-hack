@@ -1,10 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import {
-  checkMetadataOrThrow,
-  MetadataService,
-} from 'src/metadata/metadata.service';
+import { checkMetadataOrThrow } from 'src/constants';
+import { MetadataService } from 'src/metadata/metadata.service';
 import {
   Application,
   ApplicationDocument,

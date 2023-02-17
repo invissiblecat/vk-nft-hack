@@ -12,11 +12,7 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import {
-  checkMetadataOrThrow,
-  DEAFULT_IMAGES_PATH,
-  MetadataService,
-} from './metadata.service';
+import { MetadataService } from './metadata.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { MetadataImageDto } from './dto/upload-image-dto';
@@ -25,6 +21,7 @@ import { resolve } from 'path';
 import { Response } from 'express';
 import { CheckSignature } from 'src/guards/guards';
 import { ContractsService } from 'src/contracts/contracts.service';
+import { DEAFULT_IMAGES_PATH, checkMetadataOrThrow } from 'src/constants';
 const Jimp = require('jimp');
 
 @Controller('metadata-images')

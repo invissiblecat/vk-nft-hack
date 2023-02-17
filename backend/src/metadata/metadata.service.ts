@@ -3,19 +3,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Metadata, MetadataDocument } from '../schemas/metadata.schema';
 import { UpdateMetadataDto } from './dto/update-metadata.dto';
+import { DEAFULT_IMAGES_PATH, DEFAULT_METADATA_EXCLUDE } from 'src/constants';
 
-export const DEAFULT_IMAGES_PATH = 'images';
-
-export const checkMetadataOrThrow = (
-  tokenMetadata: Metadata | undefined,
-  tokenId: string,
-) => {
-  if (!tokenMetadata) {
-    throw new NotFoundException(
-      `Metadata for token with id ${tokenId} not found`,
-    );
-  }
-};
 @Injectable()
 export class MetadataService {
   constructor(
@@ -30,6 +19,7 @@ export class MetadataService {
   async findAll(): Promise<MetadataDocument[]> {
     return this.metadataModel
       .find()
+      .select(DEFAULT_METADATA_EXCLUDE)
       .populate('nftCollection')
       .populate('applications');
   }

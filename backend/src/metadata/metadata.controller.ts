@@ -14,9 +14,10 @@ import { MetadataService } from './metadata.service';
 import { CreateMetadataDto } from './dto/create-metadata.dto';
 import { Metadata } from '../schemas/metadata.schema';
 import { CollectionService } from 'src/collection/collection.service';
-import { CheckCollectionOwner } from 'src/guards/guards';
+import { CheckCollectionOwner, CheckSignature } from 'src/guards/guards';
 import { isAddress } from 'ethers/lib/utils';
 import { ContractsService } from 'src/contracts/contracts.service';
+import { DEFAULT_METADATA_EXCLUDE } from 'src/constants';
 
 @Controller('metadata')
 export class MetadataController {
@@ -61,17 +62,46 @@ export class MetadataController {
   }
 
   @Get()
-  async findAll(): Promise<Metadata[]> {
-    return this.metadataService.findAll();
+  @CheckSignature() //todo refactor
+  async findAll(@Request() req): Promise<Metadata[]> {
+    const metadatas = await this.metadataService.findAll();
+    let result = [];
+    for (const metadata of metadatas) {
+      const hasAccess = await this.contractsService.hasAccessToToken(
+        req.user,
+        metadata.nftCollection.collectionAddress,
+        metadata.tokenId,
+      );
+      console.log({ hasAccess });
+
+      if (hasAccess) {
+        result.push(metadata);
+        continue;
+      }
+
+      const collection = await this.collectionService.findOne({
+        collectionAddress: metadata.nftCollection.collectionAddress,
+      });
+      result.push(
+        await this.metadataService.findOne(
+          {
+            tokenId: metadata.tokenId,
+            nftCollection: collection._id,
+          },
+          ['-link', '-text', ...DEFAULT_METADATA_EXCLUDE],
+        ),
+      );
+    }
+    return result;
   }
 
   @Get(':tokenId')
-  async findFullOne(
+  @CheckSignature()
+  async find(
     @Request() req,
     @Param('tokenId') tokenId: string,
     @Query('collectionAddress') collectionAddress: string,
   ): Promise<Metadata> {
-    const defaultMetadataExclude = ['-pathToImage', '-pathToPreview'];
     const collection = await this.collectionService.findOne({
       collectionAddress,
     });
@@ -86,7 +116,7 @@ export class MetadataController {
           tokenId,
           nftCollection: collection._id,
         },
-        defaultMetadataExclude,
+        DEFAULT_METADATA_EXCLUDE,
       );
     }
     return this.metadataService.findOne(
@@ -94,7 +124,7 @@ export class MetadataController {
         tokenId,
         nftCollection: collection._id,
       },
-      ['-link', '-text', ...defaultMetadataExclude],
+      ['-link', '-text', ...DEFAULT_METADATA_EXCLUDE],
     );
   }
 }
