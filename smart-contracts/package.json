@@ -4,7 +4,8 @@
     "compile": "hardhat compile",
     "t": "hardhat test",
     "test": "yarn t",
-    "deploy-content-root": "hardhat run ./scripts/deploy-collection-root.ts --network $npm_config_network"
+    "bnb_deploy-content-root": "hardhat run ./scripts/deploy-collection-root.ts --network testnet_bnb",
+    "bnb_delete-coll": "hardhat run ./scripts/delete-collection.ts --network testnet_bnb"
   },
   "dependencies": {
     "@ethersproject/abi": "^5.7.0",

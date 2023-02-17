@@ -22,4 +22,8 @@ contract ContentRoot {
         emit CollectionCreated(ownerId, collectionAddress);
         return collectionAddress;
     }
+
+    function deleteCollection(uint256 ownerId) public { //todo REMOVE 
+        ownerToCollection[ownerId] = address(0);
+    }
 }

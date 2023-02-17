@@ -1,4 +1,3 @@
-import { appendFileSync, writeFileSync } from "fs";
 import { ethers } from "hardhat";
 
 async function main() {
