@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ApplicationModule } from './application/application.module';
 import { CollectionModule } from './collection/collection.module';
 import { MetadataModule } from './metadata/metadata.module';
 import { SignatureModule } from './signature/signature.module';
@@ -10,6 +11,7 @@ import { SignatureModule } from './signature/signature.module';
     MetadataModule,
     SignatureModule,
     CollectionModule,
+    ApplicationModule,
   ],
 })
 export class AppModule {}

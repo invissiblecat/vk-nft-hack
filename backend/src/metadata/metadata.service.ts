@@ -7,7 +7,6 @@ import { UpdateMetadataDto } from './dto/update-metadata.dto';
 export const DEAFULT_IMAGES_PATH = 'images';
 
 export const checkMetadataOrThrow = (
-  //todo name
   tokenMetadata: Metadata | undefined,
   tokenId: string,
 ) => {
@@ -29,23 +28,37 @@ export class MetadataService {
   }
 
   async findAll(): Promise<MetadataDocument[]> {
-    return this.metadataModel.find().populate('nftCollection');
+    return this.metadataModel
+      .find()
+      .populate('nftCollection')
+      .populate('applications');
   }
 
   async findById(id: string): Promise<MetadataDocument> {
-    return this.metadataModel.findById(id).populate('nftCollection');
+    return this.metadataModel
+      .findById(id)
+      .populate('nftCollection')
+      .populate('applications');
   }
 
   async findOne(filter: FilterQuery<Metadata>): Promise<MetadataDocument> {
-    return this.metadataModel.findOne(filter).populate('nftCollection');
+    return this.metadataModel
+      .findOne(filter)
+      .populate('nftCollection')
+      .populate('applications');
   }
 
   async updateById(
     id: Types.ObjectId,
     data: UpdateMetadataDto,
+    applicationIds: string[] = [],
   ): Promise<MetadataDocument> {
     return this.metadataModel
-      .findByIdAndUpdate(id, { $set: data }, { new: true })
+      .findByIdAndUpdate(
+        id,
+        { $set: data, $push: { applications: [applicationIds] } },
+        { new: true },
+      )
       .populate('nftCollection');
   }
 

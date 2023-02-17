@@ -13,7 +13,7 @@ export class Collection {
   ownerId: string;
 
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Metadata' }] })
-  tokensMetadata: Metadata;
+  tokensMetadata: Metadata[];
 }
 
 export const CollectionSchema = SchemaFactory.createForClass(Collection);

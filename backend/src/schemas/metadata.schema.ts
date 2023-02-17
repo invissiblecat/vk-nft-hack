@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
+import { Application } from './application.schema';
 import { Collection } from './collection.schema';
 
 export type MetadataDocument = HydratedDocument<Metadata>;
@@ -30,6 +31,11 @@ export class Metadata {
 
   @Prop()
   pathToPreview?: string;
+
+  @Prop({
+    type: [{ type: Types.ObjectId, ref: 'Application' }],
+  })
+  applications?: Application[];
 }
 
 export const MetadataSchema = SchemaFactory.createForClass(Metadata);

@@ -13,5 +13,6 @@ import { MetadataService } from './metadata.service';
   ],
   controllers: [MetadataController, MetadataImagesController],
   providers: [MetadataService],
+  exports: [MetadataService],
 })
 export class MetadataModule {}
