@@ -40,6 +40,7 @@ export class WalletStore implements Store<string> {
   }
 
   deactivate() {
+    walletService.disconnect();
     this.reset();
   }
 }

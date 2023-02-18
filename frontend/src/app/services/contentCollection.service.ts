@@ -4,7 +4,7 @@ import { contentCollectionContract } from '../contracts';
 import { ContentCreateBackend, ContentCreateContract } from '../types';
 import { apiService } from './api.service';
 
-type Req = Omit<ContentCreateBackend, 'tokenId'> & ContentCreateContract & { file?: File, address: string; }
+type Req = Omit<ContentCreateBackend, 'tokenId'> & ContentCreateContract & { file?: Blob & { preview?: string }, address: string; }
 
 class ContentService {
   async createNft({ address, initialWhitelistMembers, whitelistPlaces, file, ...reqBackend }: Req) {
@@ -20,9 +20,12 @@ class ContentService {
     if (!topics.length) throw new Error('Ошибка: topics not found');
 
     const tokenIdBN = BigNumber.from(topics[topics.length - 1]);
+    const tokenId = tokenIdBN.toString();
 
-    await apiService.createNft({ ...reqBackend, tokenId: tokenIdBN.toString() });
-    console.log(file);
+    await apiService.createNft({ ...reqBackend, tokenId });
+    if (file) {
+      await apiService.uploadImage({ file, tokenId, collectionAddress: address });
+    }
   }
 }
 

@@ -5,17 +5,32 @@ import React, { useEffect } from 'react';
 
 import { Route } from './app/enums';
 import { Providers } from './app/providers';
+import { walletService } from './app/services';
 import { Private } from './features';
 import { CreatePage, Home, Info, Persik, PurchasedPage } from './pages';
-import { useStores } from './shared';
+import { switchNetwork, useStores } from './shared';
 import { Layout, Navigation } from './widgets';
 
 export const App: React.FC = () => {
-  const { userStore } = useStores();
+  const { userStore, walletStore } = useStores();
 
   useEffect(() => {
     userStore.activate();
   }, [userStore]);
+
+  const handleAccountsChanged = async () => {
+    walletStore.deactivate();
+  };
+  const handleChainChanged = async () => {
+    switchNetwork();
+  };
+
+  useEffect(() => {
+    walletService.initListeners(
+      handleAccountsChanged,
+      handleChainChanged,
+    );
+  }, []);
 
   return (
     <Providers>

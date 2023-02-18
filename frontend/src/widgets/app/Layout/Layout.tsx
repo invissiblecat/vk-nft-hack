@@ -1,19 +1,44 @@
-import { Panel, PanelHeader } from '@vkontakte/vkui';
+import { styled } from '@mui/material';
+import { Icon20Chain, Icon20DoorArrowRightOutline } from '@vkontakte/icons';
+import { IconButton, Panel, PanelHeader } from '@vkontakte/vkui';
+import { observer } from 'mobx-react-lite';
 import React from 'react';
 
+import { useStores } from '../../../shared';
 import { AppNav } from '../AppNav';
 
 interface LayputProps {
   nav: string
 }
 
-export const Layout: React.FC<LayputProps> = ({ children, nav }) => {
+const StyledLogoutButton = styled(IconButton)(() => ({
+  position: 'absolute',
+  top: '50%',
+  right: 4,
+  transform: 'translateY(-50%)',
+  padding: 10,
+  color: 'var(--header_text_secondary)',
+  width: 40,
+  height: 40,
+}));
+
+export const Layout: React.FC<LayputProps> = observer(({ children, nav }) => {
+  const { walletStore } = useStores();
   return (
     <Panel nav={nav}>
       <PanelHeader>
         <AppNav />
+        {walletStore.data ? (
+          <StyledLogoutButton>
+            <Icon20DoorArrowRightOutline onClick={() => walletStore.deactivate()} />
+          </StyledLogoutButton>
+        ) : (
+          <StyledLogoutButton>
+            <Icon20Chain onClick={() => walletStore.activate()} />
+          </StyledLogoutButton>
+        )}
       </PanelHeader>
       {children}
     </Panel>
   );
-};
+});

@@ -23,7 +23,7 @@ export const AppNav: React.FC = () => {
 
   return (
     <HorizontalScroll showArrows>
-      <Tabs>
+      <Tabs mode="secondary">
         {routes.map(({ to, label }) => (
           <TabsItem
             key={to}

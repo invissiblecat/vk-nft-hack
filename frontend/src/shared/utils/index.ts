@@ -1,3 +1,4 @@
+export * from './file';
 export * from './modal';
 export * from './query';
 export * from './store';

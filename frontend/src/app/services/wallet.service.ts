@@ -44,8 +44,6 @@ class WalletService {
 
   handleChainChanged: EventHandler<number> = eventHandler;
 
-  handleDisconnect: EventHandler<any | undefined> = eventHandler;
-
   accountsChangedListener: EventHandler<string[]> = eventHandler;
 
   chainChangedListener: EventHandler<string> = eventHandler;
@@ -73,14 +71,13 @@ class WalletService {
     return this.signLoginMessage();
   }
 
-  async disconnect(error?: any) {
+  async disconnect() {
     web3Modal.clearCachedProvider();
     if (this.web3ModalProvider && typeof this.web3ModalProvider.disconnect === 'function') {
       await this.web3ModalProvider.disconnect();
     }
 
     apiService.removeAuthHeader();
-    await this.handleDisconnect(error);
   }
 
   async signLoginMessage() {
@@ -126,11 +123,9 @@ class WalletService {
   initListeners(
     handleAccountsChanged: EventHandler<{ accounts: string[]; chainId: number }>,
     handleChainChanged: EventHandler<number>,
-    handleDisconnect: EventHandler<any>,
   ) {
     this.handleAccountsChanged = handleAccountsChanged;
     this.handleChainChanged = handleChainChanged;
-    this.handleDisconnect = handleDisconnect;
   }
 
   private _setupListeners() {
