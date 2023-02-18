@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Contract, ethers } from 'ethers';
 import { collectionAbi } from 'src/abi/collection.abi';
 import { rootAbi } from 'src/abi/root.abi';
@@ -18,9 +18,9 @@ export class ContractsService {
     if (this.inited) return;
     const contractAddress = process.env.CONTENT_ROOT_ADDRESS;
     const rpcNodeUrl = process.env.JSON_RPC;
-    console.log({ contractAddress, rpcNodeUrl, rootAbi, collectionAbi });
-
-    if (!contractAddress || !rpcNodeUrl) return;
+    if (!contractAddress || !rpcNodeUrl) {
+      throw new NotFoundException(`.env is not correct`); //todo separate checker
+    }
     this.provider = new ethers.providers.JsonRpcProvider(rpcNodeUrl);
     this.contentRootContract = new Contract(
       contractAddress,

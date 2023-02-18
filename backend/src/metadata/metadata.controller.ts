@@ -72,7 +72,6 @@ export class MetadataController {
         metadata.nftCollection.collectionAddress,
         metadata.tokenId,
       );
-      console.log({ hasAccess });
 
       if (hasAccess) {
         result.push(metadata);
@@ -100,7 +99,7 @@ export class MetadataController {
   async find(
     @Request() req,
     @Param('tokenId') tokenId: string,
-    @Query('collectionAddress') collectionAddress: string,
+    @Query('collectionAddress') collectionAddress: string, //todo REFACTOR!
   ): Promise<Metadata> {
     const collection = await this.collectionService.findOne({
       collectionAddress,
