@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   Param,
   Post,
@@ -47,6 +48,14 @@ export class MetadataController {
           ownerId,
         });
       }
+      const existingMetadata =
+        await this.collectionService.findMetadataByTokenId(
+          collectionAddress,
+          data.tokenId,
+        );
+      if (existingMetadata) {
+        throw new ForbiddenException('Metadata already exists');
+      }
 
       const metadata = await this.metadataService.create({
         ...data,
@@ -91,16 +100,14 @@ export class MetadataController {
     @Param('tokenId') tokenId: string,
     @Query('collectionAddress') collectionAddress: string,
   ): Promise<Metadata> {
-    const collection = await this.collectionService.findOne({
-      collectionAddress,
-    });
     const hasAccess = this.contractsService.hasAccessToToken(
       req.user,
       collectionAddress,
       tokenId,
     );
-    const metadata = collection.tokensMetadata.find(
-      (metadata) => metadata.tokenId === tokenId,
+    const metadata = await this.collectionService.findMetadataByTokenId(
+      collectionAddress,
+      tokenId,
     );
     if (hasAccess) {
       return metadata;

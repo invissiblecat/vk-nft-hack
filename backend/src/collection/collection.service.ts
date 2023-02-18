@@ -3,7 +3,7 @@ import { Injectable, NotFoundException, Type } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateCollectionDto } from './dto/create-collection.dto';
 import { Collection, CollectionDocument } from 'src/schemas/collection.schema';
-import { Metadata } from 'src/schemas/metadata.schema';
+import { Metadata, MetadataDocument } from 'src/schemas/metadata.schema';
 
 @Injectable()
 export class CollectionService {
@@ -28,7 +28,14 @@ export class CollectionService {
   }
 
   async findOne(filter: FilterQuery<Collection>): Promise<CollectionDocument> {
-    return this.collectionModel.findOne(filter);
+    return this.collectionModel.findOne(filter).populate('tokensMetadata');
+  }
+
+  async findMetadataByTokenId(collectionAddress: string, tokenId: string) {
+    const collection = await this.findOne({ collectionAddress });
+    return collection.tokensMetadata.find(
+      (metadata) => metadata.tokenId === tokenId,
+    );
   }
 
   async addTokenMetadata(id: string, metadataId: string) {

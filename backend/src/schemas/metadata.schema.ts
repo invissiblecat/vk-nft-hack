@@ -18,6 +18,9 @@ export class Metadata {
   nftCollection: Collection;
 
   @Prop()
+  title: string;
+
+  @Prop()
   tokenDescription?: string;
 
   @Prop()
