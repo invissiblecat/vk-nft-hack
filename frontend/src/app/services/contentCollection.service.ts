@@ -27,6 +27,50 @@ class ContentService {
       await apiService.uploadImage({ file, tokenId, collectionAddress: address });
     }
   }
+
+  async isOwner({ account, collectionAddress }: { account: string, collectionAddress: string }) {
+    const owner = await contentCollectionContract.owner(collectionAddress);
+
+    return owner === account;
+  }
+
+  async setWhitelistMembers({
+    address,
+    tokenId,
+    tokenDbId,
+    members,
+    accepted,
+  }: {
+    address: string,
+    tokenId: string,
+    tokenDbId: string,
+    members: string[]
+    accepted: string[]
+  }) {
+    const tx = await contentCollectionContract.setWhitelistMembers({ address, tokenId, members });
+    await tx.wait();
+
+    await apiService.updateApplicationList({ tokenId: tokenDbId, address, accepted });
+  }
+
+  async deleteWhitelistMembers({
+    address,
+    tokenId,
+    tokenDbId,
+    members,
+    declined,
+  }: {
+    address: string,
+    tokenId: string,
+    tokenDbId: string,
+    members: string[]
+    declined: string[]
+  }) {
+    const tx = await contentCollectionContract.deleteWhitelistMembers({ address, tokenId, members });
+    await tx.wait();
+
+    await apiService.updateApplicationList({ tokenId: tokenDbId, address, declined });
+  }
 }
 
-export const contentService = new ContentService();
+export const contentCollectionService = new ContentService();

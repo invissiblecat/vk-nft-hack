@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 
 import { fileToBase64 } from '../../shared';
-import { Content, ContentCreateBackend } from '../types';
+import { Application, Collection, Content, ContentCreateBackend } from '../types';
 
 class ApiService {
   private _instance: AxiosInstance;
@@ -46,6 +46,46 @@ class ApiService {
     const { data } = await this._instance.get<Content>(`/metadata/${tokenId}?collectionAddress=${collectionAddress}`);
 
     return data;
+  };
+
+  createApplication = async (tokenDbId: string) => {
+    await this._instance.post<void>('/application', { tokenDbId });
+  };
+
+  getCollection = async (address: string) => {
+    const { data } = await this._instance.get<Collection>(`/collection/${address}`);
+
+    return data;
+  };
+
+  getApplication = async (tokenId: string) => {
+    const { data } = await this._instance.get<Application>(`/application/${tokenId}`);
+
+    return data;
+  };
+
+  getApplicationList = async (tokenId: string) => {
+    const { data } = await this._instance.get<Application[]>(`/application/${tokenId}/all`);
+
+    return data;
+  };
+
+  updateApplicationList = async ({
+    tokenId,
+    address,
+    accepted,
+    declined,
+  }: {
+    tokenId: string,
+    address: string,
+    accepted?: string[]
+    declined?: string[]
+  }) => {
+    await this._instance.patch<Application[]>(`/application/${tokenId}`, {
+      collectionAddress: address,
+      accepted,
+      declined,
+    });
   };
 
   uploadImage = async ({

@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 import { useStores } from '../../../shared';
 
 export const CreateCollectionForm: React.FC = observer(() => {
-  const { /* userStore, snackbarStore, */ collectionStore } = useStores();
+  const { userStore, snackbarStore, collectionStore } = useStores();
   const [error, setError] = useState({
     collectionName: false,
     collectionSymbol: false,
@@ -15,11 +15,12 @@ export const CreateCollectionForm: React.FC = observer(() => {
   const [collectionSymbol, setCollectionSymbol] = useState<string>('');
 
   const createCollection = () => {
-    // if (!userStore.data?.id) return snackbarStore.setErrorSnackbar('Пользователь не найден');
+    if (!userStore.data?.id) return snackbarStore.setErrorSnackbar('Пользователь не найден');
 
     collectionStore.requestCreate({
-      // vkId: userStore.data?.id,
-      vkId: 67135042,
+      vkId: userStore.data?.id,
+      // vkId: 1,
+      // vkId: 67135042,
       collectionName,
       collectionSymbol,
     });

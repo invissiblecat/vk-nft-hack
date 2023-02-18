@@ -15,9 +15,11 @@ export interface ContentCreateBackend {
 }
 
 export interface Content {
+  _id: string
   tokenId: string,
   nftCollection: Collection,
   tokenDescription?: string,
+  txHash: string;
   title: string;
   link?: string,
   text?: string,

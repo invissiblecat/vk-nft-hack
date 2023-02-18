@@ -40,11 +40,11 @@ class WalletService {
 
   isHandlersEnabled?: boolean;
 
-  handleAccountsChanged: EventHandler<{ accounts: string[]; chainId: number }> = eventHandler;
+  handleAccountsChanged: EventHandler<void> = eventHandler;
 
-  handleChainChanged: EventHandler<number> = eventHandler;
+  handleChainChanged: EventHandler<void> = eventHandler;
 
-  accountsChangedListener: EventHandler<string[]> = eventHandler;
+  accountsChangedListener: EventHandler<void> = eventHandler;
 
   chainChangedListener: EventHandler<string> = eventHandler;
 
@@ -121,8 +121,8 @@ class WalletService {
   }
 
   initListeners(
-    handleAccountsChanged: EventHandler<{ accounts: string[]; chainId: number }>,
-    handleChainChanged: EventHandler<number>,
+    handleAccountsChanged: EventHandler<void>,
+    handleChainChanged: EventHandler<void>,
   ) {
     this.handleAccountsChanged = handleAccountsChanged;
     this.handleChainChanged = handleChainChanged;
@@ -130,11 +130,11 @@ class WalletService {
 
   private _setupListeners() {
     this.accountsChangedListener = async () => {
-      this.disconnect();
+      // this.handleAccountsChanged();
     };
 
     this.chainChangedListener = async () => {
-      this.disconnect();
+      // this.handleChainChanged();
     };
   }
 }

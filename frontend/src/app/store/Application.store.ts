@@ -1,21 +1,21 @@
 import { makeAutoObservable } from 'mobx';
 
 import { Store, storeRequest, storeReset } from '../../shared';
-import { apiService, contentCollectionService } from '../services';
-import { Content } from '../types';
+import { apiService } from '../services';
+import { Application } from '../types';
 import { SnackbarStore } from './Snackbar.store';
 
-type CreateReq = Parameters<typeof contentCollectionService.createNft>
-type GetReq = Parameters<typeof apiService.getNft>
+type CreateReq = Parameters<typeof apiService.createApplication>
+type GetReq = Parameters<typeof apiService.getApplication>
 
-export class ContentStore implements Store<Content | void> {
+export class ApplicationStore implements Store<Application | void> {
   isLoading = false;
 
   snackbarStore: SnackbarStore;
 
-  data?: Content = undefined;
+  data?: Application = undefined;
 
-  req: GetReq = [{ tokenId: '', collectionAddress: '' }];
+  req: GetReq = [''];
 
   constructor({ snackbarStore }: { snackbarStore: SnackbarStore }) {
     this.snackbarStore = snackbarStore;
@@ -24,7 +24,7 @@ export class ContentStore implements Store<Content | void> {
     });
   }
 
-  setData(data: Content) {
+  setData(data: Application) {
     this.data = data;
   }
 
@@ -40,7 +40,7 @@ export class ContentStore implements Store<Content | void> {
   request() {
     storeRequest(
       this,
-      apiService.getNft(...this.req),
+      apiService.getApplication(...this.req),
       (data) => this.setData(data),
     );
   }
@@ -48,10 +48,10 @@ export class ContentStore implements Store<Content | void> {
   requestCreate(...req: CreateReq) {
     storeRequest(
       this,
-      contentCollectionService.createNft(...req),
+      apiService.createApplication(...req),
       () => {
         this.reload();
-        this.snackbarStore.setSuccessSnackbar('Контент создан');
+        this.snackbarStore.setSuccessSnackbar('Заявка отправлена');
       },
     );
   }

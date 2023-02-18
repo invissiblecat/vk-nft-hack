@@ -40,7 +40,9 @@ export const storeRequest = <Data>(
     .catch(
       action((error) => {
         console.log(error);
-        target.snackbarStore.setErrorSnackbar(JSON.stringify(error));
+        if (error?.response?.status !== 404 && error?.code !== 'ACTION_REJECTED') {
+          target.snackbarStore.setErrorSnackbar(JSON.stringify(error));
+        }
         if (target.isLoading) {
           target.isLoading = false;
         }

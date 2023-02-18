@@ -1,16 +1,19 @@
 import { makeAutoObservable } from 'mobx';
 
 import { Store, storeRequest, storeReset } from '../../shared';
-import { apiService, contentRootService } from '../services';
-import { Content } from '../types';
+import { contentCollectionService } from '../services';
 import { SnackbarStore } from './Snackbar.store';
 
-export class ContentListStore implements Store<Content[] | void | undefined> {
+type Req = Parameters<typeof contentCollectionService.isOwner>
+
+export class OwnerStore implements Store<boolean | void> {
   isLoading = false;
 
   snackbarStore: SnackbarStore;
 
-  data?: Content[] = undefined;
+  data: boolean = false;
+
+  req: Req = [{ account: '', collectionAddress: '' }];
 
   constructor({ snackbarStore }: { snackbarStore: SnackbarStore }) {
     this.snackbarStore = snackbarStore;
@@ -19,7 +22,7 @@ export class ContentListStore implements Store<Content[] | void | undefined> {
     });
   }
 
-  setData(data: Content[]) {
+  setData(data: boolean) {
     this.data = data;
   }
 
@@ -29,30 +32,19 @@ export class ContentListStore implements Store<Content[] | void | undefined> {
 
   reset() {
     storeReset(this);
-    this.data = undefined;
+    this.data = false;
   }
 
   request() {
     storeRequest(
       this,
-      apiService.getNftList(),
+      contentCollectionService.isOwner(...this.req),
       (data) => this.setData(data),
     );
   }
 
-  requestMy(collectionAddress: string) {
-    storeRequest(
-      this,
-      contentRootService.getMyNft(collectionAddress),
-      (data) => this.setData(data),
-    );
-  }
-
-  activate(req?: { collectionAddress?: string }) {
-    if (req?.collectionAddress) {
-      return this.requestMy(req.collectionAddress);
-    }
-
+  activate(...req: Req) {
+    this.req = req;
     this.request();
   }
 

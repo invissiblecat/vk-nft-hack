@@ -18,10 +18,10 @@ export const ContentItem: React.FC<ContentItemProps> = observer(({ content, onCl
       <SimpleCell disabled={!onClick} width="100%" style={{ maxWidth: '100%' }} onClick={onClick}>
         <Card sx={{ width: '100%', maxWidth: '100%' }}>
           {content?.pathToPreview && (
-          <CardMedia
-            sx={{ height: 150 }}
-            image={getImgSrc(content?.tokenId, content?.nftCollection.collectionAddress, apiService.signature)}
-          />
+            <CardMedia
+              sx={{ height: 150 }}
+              image={getImgSrc(content.tokenId, content.nftCollection.collectionAddress, apiService.signature)}
+            />
           )}
           <CardContent>
             <Title level="2">
@@ -30,13 +30,9 @@ export const ContentItem: React.FC<ContentItemProps> = observer(({ content, onCl
             <Spacing />
             <Text style={{ whiteSpace: 'initial' }}>
               {onClick ? (
-                <>
-                  {content?.tokenDescription}
-                </>
+                content?.tokenDescription
               ) : (
-                <>
-                  {content?.text}
-                </>
+                content?.text || content?.tokenDescription
               )}
             </Text>
           </CardContent>

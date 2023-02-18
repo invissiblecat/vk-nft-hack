@@ -9,11 +9,6 @@ class ContentCollectionContract extends Contract {
     super(ContentCollectionAbi);
   }
 
-  // collection({ vkId, address }: { vkId: number; address: string }) {
-  //   const contract = this._getContract<ContentCollection>(address);
-  //   return contract.ownerToCollection(vkId);
-  // }
-
   createNft({
     address,
     content: { whitelistPlaces, initialWhitelistMembers },
@@ -23,6 +18,37 @@ class ContentCollectionContract extends Contract {
   }) {
     const contract = this._getContract<ContentCollection>(address);
     return contract.connect(walletService.signer!).createNft(whitelistPlaces, initialWhitelistMembers);
+  }
+
+  owner(address: string) {
+    const contract = this._getContract<ContentCollection>(address);
+    return contract.owner();
+  }
+
+  setWhitelistMembers({
+    address,
+    tokenId,
+    members,
+  }: {
+    address: string,
+    tokenId: string
+    members: string[]
+  }) {
+    const contract = this._getContract<ContentCollection>(address);
+    return contract.connect(walletService.signer!).setWhitelistMembers(tokenId, members);
+  }
+
+  deleteWhitelistMembers({
+    address,
+    tokenId,
+    members,
+  }: {
+    address: string,
+    tokenId: string
+    members: string[]
+  }) {
+    const contract = this._getContract<ContentCollection>(address);
+    return contract.connect(walletService.signer!).deleteWhitelistMembers(tokenId, members);
   }
 }
 
