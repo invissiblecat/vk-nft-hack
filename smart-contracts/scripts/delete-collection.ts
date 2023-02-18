@@ -5,7 +5,7 @@ async function main() {
     "ContentRoot",
     process.env.CONTENT_ROOT_ADDRESS!
   );
-  const ownerId = "123"; //67135042
+  const ownerId = "67135042"; //67135042
   await contentRoot.deleteCollection(ownerId);
   // console.log(await contentRoot.ownerToCollection(ownerId));
 

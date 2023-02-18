@@ -80,9 +80,14 @@ export class ContractsService {
     userAddress: string,
     collectionAddress: string,
     tokenId: string,
-  ) {
+  ): Promise<boolean> {
     const collection = await this.getCollectionContract(collectionAddress);
-    return await collection.getAccess(tokenId, userAddress);
+
+    const access = await collection.getAccess(tokenId, userAddress);
+
+    console.log({ access });
+
+    return access;
   }
 
   async hasBatchAccess(

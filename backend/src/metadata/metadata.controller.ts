@@ -7,20 +7,22 @@ import {
   Post,
   Query,
   Request,
-  Response,
   UnprocessableEntityException,
-  UseGuards,
 } from '@nestjs/common';
 import { MetadataService } from './metadata.service';
 import { CreateMetadataDto } from './dto/create-metadata.dto';
-import { Metadata } from '../schemas/metadata.schema';
+import { Metadata, MetadataDocument } from '../schemas/metadata.schema';
 import { CollectionService } from 'src/collection/collection.service';
 import { CheckCollectionOwner, CheckSignature } from 'src/guards/guards';
 import { isAddress } from 'ethers/lib/utils';
 import { ContractsService } from 'src/contracts/contracts.service';
-import { DEFAULT_METADATA_EXCLUDE } from 'src/constants';
-import _, { omit } from 'lodash';
 
+import { Types } from 'mongoose';
+
+const spreadMetadata = (metadata: MetadataDocument) => {
+  const { link, text, pathToImage, ...data } = metadata.toObject();
+  return data;
+};
 @Controller('metadata')
 export class MetadataController {
   constructor(
@@ -78,7 +80,7 @@ export class MetadataController {
       await this.metadataService.findMetadataWithAccesses(req.user);
     return metadatas.map((metadata, i) => {
       if (accesses[i]) return metadata;
-      return omit(metadata, ['link', 'text', 'pathToImage']);
+      return spreadMetadata(metadata);
     });
   }
 
@@ -100,18 +102,24 @@ export class MetadataController {
     @Param('tokenId') tokenId: string,
     @Query('collectionAddress') collectionAddress: string,
   ): Promise<Metadata> {
-    const hasAccess = this.contractsService.hasAccessToToken(
+    const hasAccess = await this.contractsService.hasAccessToToken(
       req.user,
       collectionAddress,
       tokenId,
     );
-    const metadata = await this.collectionService.findMetadataByTokenId(
+    const collection = await this.collectionService.findOne({
       collectionAddress,
+    });
+    const metadata = await this.metadataService.findOne({
       tokenId,
-    );
+      nftCollection: new Types.ObjectId(collection.id),
+    });
+    console.log({ hasAccess });
+
     if (hasAccess) {
       return metadata;
     }
-    return omit(metadata, ['text', 'link', 'pathToImage']);
+
+    return spreadMetadata(metadata);
   }
 }

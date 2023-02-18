@@ -26,10 +26,10 @@ export class MetadataService {
       .populate('applications');
   }
 
-  async findById(id: string): Promise<MetadataDocument> {
+  async findById(id: string, select?: Array<any>): Promise<MetadataDocument> {
     return this.metadataModel
       .findById(id)
-      .populate('nftCollection')
+      .populate('nftCollection', undefined, 'Collection')
       .populate('applications');
   }
 

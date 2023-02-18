@@ -70,7 +70,7 @@ export class MetadataImagesController {
       collectionAddress: tokenMetadata.nftCollection.collectionAddress,
     });
     if (!isOwner) {
-      throw new ForbiddenException('access denied');
+      throw new ForbiddenException();
     }
 
     if (tokenMetadata.pathToImage) {
