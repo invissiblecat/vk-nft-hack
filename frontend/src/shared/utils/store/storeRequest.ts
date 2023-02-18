@@ -23,9 +23,9 @@ export const storeRequest = <Data>(
           if (target.isLoading) {
             target.isLoading = false;
           }
-          if (!data) return;
-
-          callback(data);
+          if (data) {
+            callback(data);
+          }
         }),
       ),
     )

@@ -18,6 +18,7 @@ export interface Content {
   tokenId: string,
   nftCollection: Collection,
   tokenDescription?: string,
+  title: string;
   link?: string,
   text?: string,
   pathToImage?: string,

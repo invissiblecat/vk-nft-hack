@@ -15,6 +15,7 @@ export const CreateContentModal: React.FC<Pick<ModalPageProps, 'nav'>> = observe
   const [addresses, setAddresses] = useState<ChipOption[]>([]);
   const [tokenDescription, setTokenDescription] = useState('');
   const [link, setLink] = useState<string>('');
+  const [title, setTitle] = useState<string>('');
   const [text, setText] = useState<string>('');
   const [file, setFile] = useState<Blob & { preview?: string }>();
 
@@ -57,7 +58,7 @@ export const CreateContentModal: React.FC<Pick<ModalPageProps, 'nav'>> = observe
       }
       header="Создание NFT"
     >
-      <FormLayout onSubmit={onSubmit}>
+      <FormLayout onSubmit={onSubmit} style={{ overflow: 'auto' }}>
         <FormItem top="Картинка">
           <IconUpload file={file} onChange={setFile} />
         </FormItem>
@@ -77,6 +78,12 @@ export const CreateContentModal: React.FC<Pick<ModalPageProps, 'nav'>> = observe
                 <Icon16Clear />
               </IconButton>
             )}
+          />
+        </FormItem>
+        <FormItem top="Заголовок">
+          <Textarea
+            value={title}
+            onChange={({ target }) => setTitle(target.value)}
           />
         </FormItem>
         <FormItem top="Краткое Описание">

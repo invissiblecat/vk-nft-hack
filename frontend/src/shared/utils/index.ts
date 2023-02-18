@@ -1,4 +1,4 @@
-export * from './file';
+export * from './img';
 export * from './modal';
 export * from './query';
 export * from './store';

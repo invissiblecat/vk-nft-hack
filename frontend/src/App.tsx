@@ -7,7 +7,7 @@ import { Route } from './app/enums';
 import { Providers } from './app/providers';
 import { walletService } from './app/services';
 import { Private } from './features';
-import { CreatePage, Home, Info, Persik, PurchasedPage } from './pages';
+import { CreatePage, FeedPage, Info, Persik, PurchasedPage } from './pages';
 import { switchNetwork, useStores } from './shared';
 import { Layout, Navigation } from './widgets';
 
@@ -37,7 +37,9 @@ export const App: React.FC = () => {
       <Navigation>
         <View nav={Route.ROOT}>
           <Layout nav={Route.ROOT}>
-            <Home />
+            <Private>
+              <FeedPage />
+            </Private>
           </Layout>
           <Persik nav="/persik" />
         </View>
