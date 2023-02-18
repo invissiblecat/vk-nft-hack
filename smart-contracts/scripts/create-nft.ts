@@ -16,6 +16,9 @@ async function main() {
   );
   const whitelistPlaces = 1;
   await collection.createNft(whitelistPlaces, []);
+
+  const res = await collection.getBatchAccess([1, 2], owner.address);
+  console.log({ res });
 }
 
 main().catch((error) => {

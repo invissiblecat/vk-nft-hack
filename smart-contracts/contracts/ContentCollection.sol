@@ -73,8 +73,18 @@ contract ContentCollection is ERC721Enumerable, Admin {
 
     function getAccess(uint256 tokenId, address user) public view returns (bool){
         if (user == owner() || isAdmin(user)) return true;
-        return whitelists[tokenId][user];
+        return whitelists[tokenId][user]; 
     }
+
+     function getBatchAccess(uint256[] memory tokenIds, address user) public view returns (bool[] memory){
+        bool[] memory res = new bool[](tokenIds.length);
+        for (uint256 i = 0; i < tokenIds.length; i++) {
+            if (user == owner() || isAdmin(user)) {res[i] = true; continue;}
+            res[i] = whitelists[tokenIds[i]][user];
+        }
+        return res;
+    }
+
 
     function getDeployer() public view returns (address) {
         return deployer;
