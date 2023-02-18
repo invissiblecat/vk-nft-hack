@@ -1,11 +1,22 @@
 import { Card, CardContent, CardMedia, styled, SxProps } from '@mui/material';
-import { SimpleCell, Spacing, Text, Title } from '@vkontakte/vkui';
+import { Icon12ArrowUpRightOutSquareOutline } from '@vkontakte/icons';
+import { Chip, Link, SimpleCell, Spacing, Text, Title } from '@vkontakte/vkui';
 import { observer } from 'mobx-react-lite';
 import React, { useMemo } from 'react';
 
 import { apiService } from '../../../app/services';
 import { Content } from '../../../app/types';
 import { getImgSrc } from '../../../shared';
+
+const StyledChip = styled(Chip)({
+  transition: 'all 0.2s',
+  '& span': {
+    color: 'var(--text_link)',
+  },
+  '&:hover': {
+    transform: 'translate(2px, -2px)',
+  },
+});
 
 const StyledSimpleCell = styled(SimpleCell)(() => ({
   '& .vkuiSimpleCell__children': {
@@ -48,6 +59,16 @@ export const ContentItem: React.FC<ContentItemProps> = observer(({ content, onCl
             {content?.title}
           </Title>
           <Spacing />
+          {content?.link && (
+            <>
+              <Link href={content.link} target="_blank">
+                <StyledChip value={content.link} removable={false} after={<Icon12ArrowUpRightOutSquareOutline />}>
+                  {content.link}
+                </StyledChip>
+              </Link>
+              <Spacing />
+            </>
+          )}
           <Text style={{ whiteSpace: 'initial' }}>
             {onClick ? (
               content?.tokenDescription
