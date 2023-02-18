@@ -71,6 +71,14 @@ class ContentService {
 
     await apiService.updateApplicationList({ tokenId: tokenDbId, address, declined });
   }
+
+  async getData(address: string) {
+    const namePromise = contentCollectionContract.name(address);
+    const symbolPromise = contentCollectionContract.symbol(address);
+    const [name, symbol] = await Promise.all([namePromise, symbolPromise]);
+
+    return { name, symbol };
+  }
 }
 
 export const contentCollectionService = new ContentService();

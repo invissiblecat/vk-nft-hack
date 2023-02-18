@@ -10,16 +10,16 @@ export interface ApplicationListApprovedProps {
 }
 
 export const ApplicationListApproved: React.FC<ApplicationListApprovedProps> = observer(({ approvedAddresses }) => {
-  const { applicationListStore, contentStore, collectionStore, snackbarStore } = useStores();
+  const { applicationListStore, contentStore, collectionAddressStore, snackbarStore } = useStores();
   const [selectedAddresses, setSelectedAddresses] = useState<string[]>([]);
 
   const request = () => {
     if (!applicationListStore.data) return snackbarStore.setErrorSnackbar('Заявки не найдены');
-    if (!collectionStore.data) return snackbarStore.setErrorSnackbar('Коллекция не найдена');
+    if (!collectionAddressStore.data) return snackbarStore.setErrorSnackbar('Коллекция не найдена');
     if (!contentStore.data) return snackbarStore.setErrorSnackbar('NFT не найден');
 
     applicationListStore.declineApplicationList({
-      address: collectionStore.data,
+      address: collectionAddressStore.data,
       tokenId: contentStore.data.tokenId,
       tokenDbId: contentStore.data._id,
       members: selectedAddresses,

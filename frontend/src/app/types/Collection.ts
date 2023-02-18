@@ -11,3 +11,8 @@ export interface Collection {
   ownerId: number;
   tokensMetadata?: Content[]
 }
+
+export interface CollectionData {
+  name: string;
+  symbol: string;
+}

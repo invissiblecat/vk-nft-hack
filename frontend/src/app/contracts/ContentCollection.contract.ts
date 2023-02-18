@@ -25,6 +25,16 @@ class ContentCollectionContract extends Contract {
     return contract.owner();
   }
 
+  name(address: string) {
+    const contract = this._getContract<ContentCollection>(address);
+    return contract.name();
+  }
+
+  symbol(address: string) {
+    const contract = this._getContract<ContentCollection>(address);
+    return contract.symbol();
+  }
+
   setWhitelistMembers({
     address,
     tokenId,

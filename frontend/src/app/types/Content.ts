@@ -7,6 +7,7 @@ export interface ContentCreateContract {
 
 export interface ContentCreateBackend {
   tokenId: string;
+  title?: string
   collectionAddress: string;
   ownerId: number;
   txHash: string;

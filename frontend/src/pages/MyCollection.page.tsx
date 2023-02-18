@@ -1,5 +1,5 @@
 import { push } from '@cteamdev/router';
-import { Button, Group } from '@vkontakte/vkui';
+import { Button, Group, SimpleCell, Title } from '@vkontakte/vkui';
 import { observer } from 'mobx-react-lite';
 import React, { useEffect } from 'react';
 
@@ -10,21 +10,25 @@ import { ContentItem } from '../widgets';
 import { EmptyPage } from './Empty.page';
 
 export const MyCollectionPage: React.FC = observer(() => {
-  const { contentListStore, contentStore, collectionStore } = useStores();
+  const { contentListStore, contentStore, collectionAddressStore, collectionStore } = useStores();
 
   useCollectionRequest();
 
   useEffect(() => {
-    if (!collectionStore.data) return;
+    if (!collectionAddressStore.data) return;
 
-    contentListStore.activate({ collectionAddress: collectionStore.data });
+    contentListStore.activate({ collectionAddress: collectionAddressStore.data });
+    collectionStore.activate(collectionAddressStore.data);
 
-    return () => contentListStore.deactivate();
-  }, [contentListStore, collectionStore.data]);
+    return () => {
+      contentListStore.deactivate();
+      collectionStore.deactivate();
+    };
+  }, [collectionAddressStore.data]);
 
   return (
     <Group>
-      <Loader isLoading={contentListStore.isLoading || collectionStore.isLoading}>
+      <Loader isLoading={contentListStore.isLoading || collectionAddressStore.isLoading}>
         <EmptyPage
           isEmpty={!contentListStore.data || !contentListStore.data.length}
           action={
@@ -33,6 +37,9 @@ export const MyCollectionPage: React.FC = observer(() => {
             </Button>
             }
         >
+          <SimpleCell disabled>
+            <Title level="2">{collectionStore.data?.name} ({collectionStore.data?.symbol})</Title>
+          </SimpleCell>
           {!!contentListStore.data?.length && contentListStore.data.map((content) => (
             <ContentItem
               key={content.tokenId + content.nftCollection.collectionAddress}

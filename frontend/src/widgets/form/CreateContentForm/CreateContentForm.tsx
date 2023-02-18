@@ -9,7 +9,7 @@ import { IconUpload } from '../../../features';
 import { useStores } from '../../../shared';
 
 export const CreateContentForm: React.FC = observer(() => {
-  const { userStore, snackbarStore, contentStore, collectionStore } = useStores();
+  const { userStore, snackbarStore, contentStore, collectionAddressStore } = useStores();
   const [whitelistPlaces, setWhitelistPlaces] = useState<number>();
   const [addresses, setAddresses] = useState<ChipOption[]>([]);
   const [tokenDescription, setTokenDescription] = useState('');
@@ -35,13 +35,13 @@ export const CreateContentForm: React.FC = observer(() => {
 
   const createContent = () => {
     // if (!userStore.data?.id) return snackbarStore.setErrorSnackbar('Пользователь не найден');
-    if (!collectionStore.data) return snackbarStore.setErrorSnackbar('Коллекция не найдена');
+    if (!collectionAddressStore.data) return snackbarStore.setErrorSnackbar('Коллекция не найдена');
 
     contentStore.requestCreate({
-      address: collectionStore.data,
+      address: collectionAddressStore.data,
       whitelistPlaces: (whitelistPlaces || constants.MaxUint256).toString(),
       initialWhitelistMembers: addresses.map(({ value }) => value?.toString()).filter(Boolean) as string[],
-      collectionAddress: collectionStore.data,
+      collectionAddress: collectionAddressStore.data,
       // ownerId: userStore.data?.id,
       // ownerId: 1,
       ownerId: 67135042,
@@ -49,6 +49,7 @@ export const CreateContentForm: React.FC = observer(() => {
       link,
       text,
       file,
+      title,
     });
   };
 

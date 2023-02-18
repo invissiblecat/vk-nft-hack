@@ -7,24 +7,24 @@ import { useCollectionRequest, useStores } from '../shared';
 import { CreateCollectionForm, CreateContentForm } from '../widgets';
 
 export const CreatePage: React.FC = observer(() => {
-  const { collectionStore } = useStores();
+  const { collectionAddressStore } = useStores();
 
   useCollectionRequest();
 
   return (
     <>
       <Group>
-        <Loader isLoading={collectionStore.isLoading}>
+        <Loader isLoading={collectionAddressStore.isLoading}>
           <SimpleCell disabled>
             <Title level="2">
-              {collectionStore.data ? (
+              {collectionAddressStore.data ? (
                 'Создание NFT'
               ) : (
                 'Перед созданием NFT необходимо создать коллекцию'
               )}
             </Title>
           </SimpleCell>
-          {collectionStore.data ? (
+          {collectionAddressStore.data ? (
             <CreateContentForm />
           ) : (
             <CreateCollectionForm />

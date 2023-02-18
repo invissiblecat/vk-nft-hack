@@ -1,22 +1,18 @@
-import { constants } from 'ethers';
 import { makeAutoObservable } from 'mobx';
 
 import { Store, storeRequest, storeReset } from '../../shared';
-import { contentRootContract } from '../contracts';
-import { contentRootService } from '../services';
+import { contentCollectionService } from '../services';
+import { CollectionData } from '../types';
 import { SnackbarStore } from './Snackbar.store';
 
-type GetReq = Parameters<typeof contentRootContract.collection>
-type CreateReq = Parameters<typeof contentRootService.createCollection>
-
-export class CollectionStore implements Store<string> {
+export class CollectionStore implements Store<CollectionData> {
   isLoading = false;
 
   snackbarStore: SnackbarStore;
 
-  data?: string = undefined;
+  data?: CollectionData = undefined;
 
-  req: GetReq = [{ address: '', vkId: 0 }];
+  req: string = '';
 
   constructor({ snackbarStore }: { snackbarStore: SnackbarStore }) {
     this.snackbarStore = snackbarStore;
@@ -25,9 +21,7 @@ export class CollectionStore implements Store<string> {
     });
   }
 
-  setData(data: string) {
-    if (data === constants.AddressZero) return;
-
+  setData(data: CollectionData) {
     this.data = data;
   }
 
@@ -43,24 +37,13 @@ export class CollectionStore implements Store<string> {
   request() {
     storeRequest(
       this,
-      contentRootContract.collection(...this.req),
+      contentCollectionService.getData(this.req),
       (data) => this.setData(data),
     );
   }
 
-  requestCreate(...req: CreateReq) {
-    storeRequest(
-      this,
-      contentRootService.createCollection(...req),
-      () => {
-        this.reload();
-        this.snackbarStore.setSuccessSnackbar('Коллекция создана');
-      },
-    );
-  }
-
-  activate(...req: GetReq) {
-    this.req = req;
+  activate(address: string) {
+    this.req = address;
     this.request();
   }
 
