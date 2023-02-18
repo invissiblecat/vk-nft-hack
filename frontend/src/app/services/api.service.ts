@@ -42,6 +42,12 @@ class ApiService {
     return data;
   };
 
+  getNft = async ({ tokenId, collectionAddress }: { tokenId: string, collectionAddress: string }) => {
+    const { data } = await this._instance.get<Content>(`/metadata/${tokenId}?collectionAddress=${collectionAddress}`);
+
+    return data;
+  };
+
   uploadImage = async ({
     file,
     tokenId,

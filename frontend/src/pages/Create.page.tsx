@@ -1,21 +1,22 @@
-import { Icon28AddAwardOutline, Icon28FavoriteAddOutline } from '@vkontakte/icons';
-import { CellButton, Group, SimpleCell } from '@vkontakte/vkui';
+import { Group, SimpleCell, Title } from '@vkontakte/vkui';
 import { observer } from 'mobx-react-lite';
 import React, { useEffect } from 'react';
 
-import { ChainId, ModalRoute, Route } from '../app/enums';
+import { ChainId } from '../app/enums';
 import { Loader } from '../features';
-import { CONTENT_ROOT_ADDRESSES_MAP, openModalCallback, useStores } from '../shared';
+import { CONTENT_ROOT_ADDRESSES_MAP, useStores } from '../shared';
+import { CreateCollectionForm, CreateContentForm } from '../widgets';
 
 export const CreatePage: React.FC = observer(() => {
-  const { collectionStore, contentStore, userStore } = useStores();
+  const { /* userStore, snackbarStore, */ collectionStore, userStore } = useStores();
 
   useEffect(() => {
-    if (!userStore.data) return;
+    // if (!userStore.data) return;
 
     collectionStore.activate({
       address: CONTENT_ROOT_ADDRESSES_MAP[ChainId.BINANCE_TESTNET],
-      vkId: userStore.data.id,
+      vkId: 67135042,
+      // vkId: userStore.data.id,
     });
 
     return () => collectionStore.deactivate();
@@ -24,24 +25,20 @@ export const CreatePage: React.FC = observer(() => {
   return (
     <>
       <Group>
-        <SimpleCell style={{ pointerEvents: 'none' }}>
-          Тут вы можете создать приватный контент
-        </SimpleCell>
-        <Loader isLoading={collectionStore.isLoading || contentStore.isLoading}>
+        <Loader isLoading={collectionStore.isLoading}>
+          <SimpleCell disabled>
+            <Title level="2">
+              {collectionStore.data ? (
+                'Создание NFT'
+              ) : (
+                'Перед созданием NFT необходимо создать коллекцию'
+              )}
+            </Title>
+          </SimpleCell>
           {collectionStore.data ? (
-            <CellButton
-              before={<Icon28FavoriteAddOutline />}
-              onClick={openModalCallback(Route.CREATE, ModalRoute.CREATE_CONTENT)}
-            >
-              Создать приватный контент
-            </CellButton>
+            <CreateContentForm />
           ) : (
-            <CellButton
-              before={<Icon28AddAwardOutline />}
-              onClick={openModalCallback(Route.CREATE, ModalRoute.CREATE_COLLECTION)}
-            >
-              Создать коллекцию
-            </CellButton>
+            <CreateCollectionForm />
           )}
         </Loader>
       </Group>

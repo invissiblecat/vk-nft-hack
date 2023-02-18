@@ -1,5 +1,6 @@
 import { Card, CardContent, CardMedia } from '@mui/material';
 import { SimpleCell, Spacing, Text, Title } from '@vkontakte/vkui';
+import { observer } from 'mobx-react-lite';
 import React from 'react';
 
 import { apiService } from '../../../app/services';
@@ -7,32 +8,41 @@ import { Content } from '../../../app/types';
 import { getImgSrc } from '../../../shared';
 
 interface ContentItemProps {
-  content: Content
+  content?: Content
+  onClick?: () => void
 }
 
-export const ContentItem: React.FC<ContentItemProps> = ({ content }) => {
+export const ContentItem: React.FC<ContentItemProps> = observer(({ content, onClick }) => {
   return (
-    <SimpleCell width="100%" style={{ maxWidth: '100%' }}>
-      <Card sx={{ width: '100%', maxWidth: '100%' }}>
-        {content.pathToPreview && (
+    <>
+      <SimpleCell disabled={!onClick} width="100%" style={{ maxWidth: '100%' }} onClick={onClick}>
+        <Card sx={{ width: '100%', maxWidth: '100%' }}>
+          {content?.pathToPreview && (
           <CardMedia
-            sx={{ height: 140 }}
-            image={getImgSrc(content.tokenId, content.nftCollection.collectionAddress, apiService.signature)}
-            title="green iguana"
+            sx={{ height: 150 }}
+            image={getImgSrc(content?.tokenId, content?.nftCollection.collectionAddress, apiService.signature)}
           />
-        )}
-        <CardContent>
-          <Title level="2">
-            {content.tokenDescription?.substring(0, 20)}
-          </Title>
-          <Spacing />
-          <Text style={{ whiteSpace: 'initial' }}>
-            {content.tokenDescription}
-          </Text>
-        </CardContent>
+          )}
+          <CardContent>
+            <Title level="2">
+              {content?.tokenDescription?.substring(0, 20)}
+            </Title>
+            <Spacing />
+            <Text style={{ whiteSpace: 'initial' }}>
+              {onClick ? (
+                <>
+                  {content?.tokenDescription}
+                </>
+              ) : (
+                <>
+                  {content?.text}
+                </>
+              )}
+            </Text>
+          </CardContent>
 
-        {/* {content.title} */}
-        {/* {content.pathToPreview && (
+          {/* {content.title} */}
+          {/* {content.pathToPreview && (
           <img
             src={getImgSrc(content.tokenId, content.nftCollection.collectionAddress, apiService.signature)}
             alt=""
@@ -40,7 +50,8 @@ export const ContentItem: React.FC<ContentItemProps> = ({ content }) => {
             height={30}
           />
         )} */}
-      </Card>
-    </SimpleCell>
+        </Card>
+      </SimpleCell>
+    </>
   );
-};
+});

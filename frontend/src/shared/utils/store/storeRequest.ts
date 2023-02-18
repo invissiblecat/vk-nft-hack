@@ -23,9 +23,8 @@ export const storeRequest = <Data>(
           if (target.isLoading) {
             target.isLoading = false;
           }
-          if (data) {
-            callback(data);
-          }
+          // @ts-ignore
+          callback(data);
         }),
       ),
     )
@@ -40,6 +39,7 @@ export const storeRequest = <Data>(
     )
     .catch(
       action((error) => {
+        console.log(error);
         target.snackbarStore.setErrorSnackbar(JSON.stringify(error));
         if (target.isLoading) {
           target.isLoading = false;

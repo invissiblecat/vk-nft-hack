@@ -3,5 +3,6 @@ export enum Route {
   FEED = '/feed',
   CREATE = '/create',
   PURCHASED = '/purchased',
-  MY = '/my'
+  MY = '/my',
+  NFT = '/nft'
 }

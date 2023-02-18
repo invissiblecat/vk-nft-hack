@@ -7,13 +7,13 @@ import { Loader } from '../features';
 import { useStores } from '../shared';
 
 export const PurchasedPage: React.FC = observer(() => {
-  const { contentStore } = useStores();
+  const { contentListStore } = useStores();
 
   useEffect(() => {
-    contentStore.activate();
+    contentListStore.activate();
 
-    return () => contentStore.deactivate();
-  }, [contentStore]);
+    return () => contentListStore.deactivate();
+  }, [contentListStore]);
 
   return (
     <>
@@ -21,8 +21,8 @@ export const PurchasedPage: React.FC = observer(() => {
         <SimpleCell style={{ pointerEvents: 'none' }}>
           test
         </SimpleCell>
-        <Loader isLoading={contentStore.isLoading}>
-          {contentStore.data?.map(({ tokenId, nftCollection, pathToPreview }) => (
+        <Loader isLoading={contentListStore.isLoading}>
+          {contentListStore.data?.map(({ tokenId, nftCollection, pathToPreview }) => (
             <>
               {pathToPreview && (
                 <img

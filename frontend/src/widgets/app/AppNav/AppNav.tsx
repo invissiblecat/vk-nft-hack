@@ -1,14 +1,15 @@
 import { replace, useCurrentState } from '@cteamdev/router';
+import { Icon20AwardAddOutline, Icon20NewsfeedOutline, Icon20NftHeptagonOutline, Icon20Stars } from '@vkontakte/icons';
 import { HorizontalScroll, Tabs, TabsItem } from '@vkontakte/vkui';
 import React, { useState } from 'react';
 
 import { Route } from '../../../app/enums';
 
 export const routes = [
-  { to: Route.ROOT, label: 'Лента' },
-  { to: Route.PURCHASED, label: 'Купленные' },
-  { to: Route.CREATE, label: 'Создать' },
-  { to: Route.MY, label: 'Мои' },
+  { to: Route.ROOT, label: 'Лента', before: <Icon20NewsfeedOutline /> },
+  { to: Route.PURCHASED, label: 'Доступные NFT', before: <Icon20NftHeptagonOutline /> },
+  { to: Route.CREATE, label: 'Создать', before: <Icon20AwardAddOutline /> },
+  { to: Route.MY, label: 'Моя коллекция', before: <Icon20Stars /> },
 ];
 
 export const AppNav: React.FC = () => {
@@ -22,10 +23,11 @@ export const AppNav: React.FC = () => {
   };
 
   return (
-    <HorizontalScroll showArrows>
+    <HorizontalScroll showArrows getScrollToLeft={(i) => i - 120} getScrollToRight={(i) => i + 120}>
       <Tabs mode="secondary">
-        {routes.map(({ to, label }) => (
+        {routes.map(({ to, label, before }) => (
           <TabsItem
+            before={before}
             key={to}
             selected={selected === to}
             onClick={onClick(to)}

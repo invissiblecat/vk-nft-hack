@@ -32,9 +32,10 @@ const Desc = styled(Text)(() => ({
 interface IconUploadProps {
   file?: Blob & { preview?: string }
   onChange: (value: Blob) => void
+  disabled?: boolean;
 }
 
-export const IconUpload: React.FC<IconUploadProps> = observer(({ file, onChange }) => {
+export const IconUpload: React.FC<IconUploadProps> = observer(({ file, onChange, disabled }) => {
   const onDrop = (acceptedFiles: Blob[]) => {
     const [file] = acceptedFiles.map((file) => Object.assign(file, {
       preview: URL.createObjectURL(file),
@@ -65,10 +66,10 @@ export const IconUpload: React.FC<IconUploadProps> = observer(({ file, onChange 
             Кликните на эту область или перетащите файл
           </Desc>
         </Flex>
-        <input {...getInputProps()} />
+        <input {...getInputProps()} disabled={disabled} />
       </Wrapper>
       {file?.preview && (
-      <IconButton onClick={resetIcon}>
+      <IconButton onClick={resetIcon} disabled={disabled}>
         <Icon28Delete color="red" />
       </IconButton>
       )}

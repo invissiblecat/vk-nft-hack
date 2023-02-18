@@ -7,7 +7,7 @@ import { Route } from './app/enums';
 import { Providers } from './app/providers';
 import { walletService } from './app/services';
 import { Private } from './features';
-import { CreatePage, FeedPage, Info, Persik, PurchasedPage } from './pages';
+import { CreatePage, FeedPage, Info, NftPage, PurchasedPage } from './pages';
 import { switchNetwork, useStores } from './shared';
 import { Layout, Navigation } from './widgets';
 
@@ -41,7 +41,11 @@ export const App: React.FC = () => {
               <FeedPage />
             </Private>
           </Layout>
-          <Persik nav="/persik" />
+          <Layout nav={Route.NFT}>
+            <Private>
+              <NftPage />
+            </Private>
+          </Layout>
         </View>
         <View nav={Route.PURCHASED}>
           <Layout nav={Route.ROOT}>
@@ -49,7 +53,6 @@ export const App: React.FC = () => {
               <PurchasedPage />
             </Private>
           </Layout>
-          <Persik nav="/persik" />
         </View>
         <View nav={Route.CREATE}>
           <Layout nav={Route.ROOT}>
@@ -57,7 +60,6 @@ export const App: React.FC = () => {
               <CreatePage />
             </Private>
           </Layout>
-          <Persik nav="/persik" />
         </View>
         <View nav={Route.MY}>
           <Layout nav={Route.ROOT}>
