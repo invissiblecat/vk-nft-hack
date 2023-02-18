@@ -18,19 +18,21 @@ export const FeedPage: React.FC = observer(() => {
     return () => contentListStore.deactivate();
   }, [contentListStore]);
 
+  console.log(contentListStore.data);
+
   return (
     <>
       <Group>
         <Loader isLoading={contentListStore.isLoading}>
           <EmptyPage
-            isEmpty={!contentListStore.data}
+            isEmpty={!contentListStore.data || !contentListStore.data.length}
             action={
               <Button onClick={() => push(Route.CREATE)}>
                 Буду первый!
               </Button>
             }
           >
-            {contentListStore.data?.map((content) => (
+            {!!contentListStore.data?.length && contentListStore.data.map((content) => (
               <ContentItem
                 key={content.tokenId + content.nftCollection.collectionAddress}
                 content={content}

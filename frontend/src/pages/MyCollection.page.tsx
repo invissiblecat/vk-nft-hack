@@ -26,14 +26,14 @@ export const MyCollectionPage: React.FC = observer(() => {
     <Group>
       <Loader isLoading={contentListStore.isLoading || collectionStore.isLoading}>
         <EmptyPage
-          isEmpty={!contentListStore.data}
+          isEmpty={!contentListStore.data || !contentListStore.data.length}
           action={
             <Button onClick={() => push(Route.CREATE)}>
               Создать первую NFT!
             </Button>
             }
         >
-          {contentListStore.data?.map((content) => (
+          {!!contentListStore.data?.length && contentListStore.data.map((content) => (
             <ContentItem
               key={content.tokenId + content.nftCollection.collectionAddress}
               content={content}
