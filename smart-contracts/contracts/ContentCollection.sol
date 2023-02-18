@@ -49,7 +49,8 @@ contract ContentCollection is ERC721Enumerable, Admin {
     } 
 
     function setWhitelistMembers(uint256 tokenId, address[] memory members) public onlyAdmin tokenMinted(tokenId) {
-        require (whitelistLimits[tokenId] >= members.length, 'setWhitelistMembers: not enough places in whitelist'); //todo require token is deployed
+        _requireMinted(tokenId);
+        require (whitelistLimits[tokenId] >= members.length, 'setWhitelistMembers: not enough places in whitelist'); 
         for (uint256 i = 0; i < members.length; i++) {
             if (getAccess(tokenId, members[i])) continue;
             whitelists[tokenId][members[i]] = true;

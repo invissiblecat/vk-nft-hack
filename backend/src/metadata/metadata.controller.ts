@@ -89,7 +89,7 @@ export class MetadataController {
   async find(
     @Request() req,
     @Param('tokenId') tokenId: string,
-    @Query('collectionAddress') collectionAddress: string, //todo REFACTOR!
+    @Query('collectionAddress') collectionAddress: string,
   ): Promise<Metadata> {
     const collection = await this.collectionService.findOne({
       collectionAddress,
@@ -99,21 +99,12 @@ export class MetadataController {
       collectionAddress,
       tokenId,
     );
-    if (hasAccess) {
-      return this.metadataService.findOne(
-        {
-          tokenId,
-          nftCollection: collection._id,
-        },
-        DEFAULT_METADATA_EXCLUDE,
-      );
-    }
-    return this.metadataService.findOne(
-      {
-        tokenId,
-        nftCollection: collection._id,
-      },
-      ['-link', '-text', ...DEFAULT_METADATA_EXCLUDE],
+    const metadata = collection.tokensMetadata.find(
+      (metadata) => metadata.tokenId === tokenId,
     );
+    if (hasAccess) {
+      return metadata;
+    }
+    return omit(metadata, ['text', 'link', 'pathToImage']);
   }
 }

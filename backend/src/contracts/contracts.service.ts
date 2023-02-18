@@ -19,7 +19,7 @@ export class ContractsService {
     const contractAddress = process.env.CONTENT_ROOT_ADDRESS;
     const rpcNodeUrl = process.env.JSON_RPC;
     if (!contractAddress || !rpcNodeUrl) {
-      throw new NotFoundException(`.env is not correct`); //todo separate checker
+      throw new NotFoundException(`.env is not correct`);
     }
     this.provider = new ethers.providers.JsonRpcProvider(rpcNodeUrl);
     this.contentRootContract = new Contract(
