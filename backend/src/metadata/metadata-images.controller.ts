@@ -21,10 +21,15 @@ import { resolve } from 'path';
 import { Response } from 'express';
 import { CheckSignature } from 'src/guards/guards';
 import { ContractsService } from 'src/contracts/contracts.service';
-import { DEAFULT_IMAGES_PATH, checkMetadataOrThrow } from 'src/constants';
+import {
+  DEAFULT_IMAGES_PATH,
+  checkMetadataOrThrow,
+  getUserAddress,
+} from 'src/constants';
+
 const Jimp = require('jimp');
 
-@Controller('metadata-images')
+@Controller('images')
 export class MetadataImagesController {
   constructor(
     private readonly metadataService: MetadataService,
@@ -35,7 +40,7 @@ export class MetadataImagesController {
     }
   }
 
-  @Post('uploadImage')
+  @Post()
   @CheckSignature()
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -71,7 +76,7 @@ export class MetadataImagesController {
     }
 
     if (tokenMetadata.pathToImage) {
-      unlinkSync(tokenMetadata.pathToImage);
+      unlinkSync(tokenMetadata.pathToImage); //todo exception
       unlinkSync(tokenMetadata.pathToPreview);
     }
 
@@ -97,13 +102,13 @@ export class MetadataImagesController {
   }
 
   @Get(':tokenId')
-  @CheckSignature()
   async downloadFile(
-    @Request() req,
     @Param('tokenId') tokenId: string,
     @Query('collectionAddress') collectionAddress: string,
+    @Query('signature') signature: string,
     @Res() response: Response,
   ) {
+    const user = getUserAddress(signature);
     const tokenMetadatas = await this.metadataService.findMany({ tokenId });
     const tokenMetadata = tokenMetadatas.find(
       (metadata) =>
@@ -111,7 +116,7 @@ export class MetadataImagesController {
     );
     checkMetadataOrThrow(tokenMetadata, tokenId);
     const hasAccess = await this.contractsService.hasAccessToToken(
-      req.user,
+      user,
       collectionAddress,
       tokenId,
     );
