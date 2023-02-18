@@ -21,6 +21,9 @@ export class Metadata {
   title: string;
 
   @Prop()
+  txHash: string;
+
+  @Prop()
   tokenDescription?: string;
 
   @Prop()
