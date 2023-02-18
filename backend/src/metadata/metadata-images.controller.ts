@@ -9,12 +9,9 @@ import {
   Query,
   Request,
   Res,
-  UploadedFile,
-  UseInterceptors,
 } from '@nestjs/common';
 import { MetadataService } from './metadata.service';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBody, ApiConsumes } from '@nestjs/swagger';
+import { ApiBody } from '@nestjs/swagger';
 import { MetadataImageDto } from './dto/upload-image-dto';
 import { existsSync, mkdirSync, unlinkSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
@@ -42,7 +39,6 @@ export class MetadataImagesController {
 
   @Post()
   @CheckSignature()
-  @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
       type: 'object',
@@ -53,21 +49,14 @@ export class MetadataImagesController {
         collectionAddress: {
           type: 'string',
         },
-        file: {
+        base64File: {
           type: 'string',
           format: 'binary',
         },
       },
     },
   })
-  @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(
-    @Request() req,
-    @Body() body: MetadataImageDto,
-    @UploadedFile('file') file,
-  ) {
-    console.log({ file });
-
+  async uploadFile(@Request() req, @Body() body: MetadataImageDto) {
     const tokenMetadatas = await this.metadataService.findMany({
       tokenId: body.tokenId,
     });
@@ -85,23 +74,27 @@ export class MetadataImagesController {
     }
 
     if (tokenMetadata.pathToImage) {
-      unlinkSync(tokenMetadata.pathToImage); //todo exception
-      unlinkSync(tokenMetadata.pathToPreview);
+      try {
+        unlinkSync(tokenMetadata.pathToImage); //todo exception
+        unlinkSync(tokenMetadata.pathToPreview);
+      } catch (error) {}
     }
+
+    const imageBuffer = this.metadataService.getBase64Buffer(body.base64File);
 
     const filePath = this.metadataService.makeFilePath(
       body.tokenId,
       body.collectionAddress,
-      file.originalname,
+      body.base64File,
     );
     console.log({ filePath });
 
-    writeFileSync(filePath, file.buffer);
+    writeFileSync(filePath, imageBuffer);
 
     const previewPath = this.metadataService.makePreviewPath(
       body.tokenId,
       body.collectionAddress,
-      file.originalname,
+      body.base64File,
     );
 
     const original = await Jimp.read(filePath);

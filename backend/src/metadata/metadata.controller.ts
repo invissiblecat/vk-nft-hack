@@ -18,6 +18,7 @@ import { CheckCollectionOwner, CheckSignature } from 'src/guards/guards';
 import { isAddress } from 'ethers/lib/utils';
 import { ContractsService } from 'src/contracts/contracts.service';
 import { DEFAULT_METADATA_EXCLUDE } from 'src/constants';
+import _, { omit } from 'lodash';
 
 @Controller('metadata')
 export class MetadataController {
@@ -62,36 +63,25 @@ export class MetadataController {
   }
 
   @Get()
-  @CheckSignature() //todo refactor
+  @CheckSignature()
   async findAll(@Request() req): Promise<Metadata[]> {
-    const metadatas = await this.metadataService.findAll();
-    let result = [];
-    for (const metadata of metadatas) {
-      const hasAccess = await this.contractsService.hasAccessToToken(
-        req.user,
-        metadata.nftCollection.collectionAddress,
-        metadata.tokenId,
-      );
+    const { metadatas, accesses } =
+      await this.metadataService.findMetadataWithAccesses(req.user);
+    return metadatas.map((metadata, i) => {
+      if (accesses[i]) return metadata;
+      return omit(metadata, ['link', 'text', 'pathToImage']);
+    });
+  }
 
-      if (hasAccess) {
-        result.push(metadata);
-        continue;
-      }
-
-      const collection = await this.collectionService.findOne({
-        collectionAddress: metadata.nftCollection.collectionAddress,
-      });
-      result.push(
-        await this.metadataService.findOne(
-          {
-            tokenId: metadata.tokenId,
-            nftCollection: collection._id,
-          },
-          ['-link', '-text', ...DEFAULT_METADATA_EXCLUDE],
-        ),
-      );
-    }
-    return result;
+  @Get('availible')
+  @CheckSignature()
+  async findAvailible(@Request() req): Promise<Metadata[]> {
+    const { metadatas, accesses } =
+      await this.metadataService.findMetadataWithAccesses(req.user);
+    return metadatas.filter((_, i) => {
+      if (accesses[i]) return true;
+      return false;
+    });
   }
 
   @Get(':tokenId')
