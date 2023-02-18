@@ -1,6 +1,8 @@
+import { push } from '@cteamdev/router';
 import { makeAutoObservable } from 'mobx';
 
 import { Store, storeRequest, storeReset } from '../../shared';
+import { Route } from '../enums';
 import { apiService, contentCollectionService } from '../services';
 import { Content } from '../types';
 import { SnackbarStore } from './Snackbar.store';
@@ -52,6 +54,7 @@ export class ContentStore implements Store<Content | void> {
       () => {
         this.reload();
         this.snackbarStore.setSuccessSnackbar('Контент создан');
+        push(Route.MY);
       },
     );
   }

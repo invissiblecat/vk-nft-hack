@@ -8,7 +8,6 @@ import {
 import React, { ReactNode, useMemo } from 'react';
 
 import { Snackbar } from '../../../entities';
-import { Popouts } from '../../../popouts';
 import { ModalRoot } from '../../modal';
 
 interface NavigationProps {
@@ -24,7 +23,6 @@ export const Navigation: React.FC<NavigationProps> = ({ children }: NavigationPr
       <SplitLayout
         style={{ justifyContent: 'center' }}
         modal={<ModalRoot />}
-        popout={<Popouts />}
       >
         <SplitCol
           animate={!isDesktop}
