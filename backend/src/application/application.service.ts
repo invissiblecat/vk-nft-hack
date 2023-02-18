@@ -36,6 +36,7 @@ export class ApplicationService {
 
     let existingApplication = await this.findOne({
       desiredTokenMetadata: tokenMetadata._id,
+      user: user._id,
     });
     if (existingApplication) return;
 
@@ -59,27 +60,11 @@ export class ApplicationService {
   }
 
   async find(filter: FilterQuery<Application>): Promise<Application[]> {
-    try {
-      const application = this.applicationModel
-        .find(filter, undefined, {})
-        .populate('desiredTokenMetadata')
-        .populate('user');
-      return application;
-    } catch (error) {
-      return undefined;
-    }
+    return this.applicationModel.find(filter).populate('user');
   }
 
   async findOne(filter: FilterQuery<Application>): Promise<Application> {
-    try {
-      const application = this.applicationModel
-        .findOne(filter)
-        .populate('desiredTokenMetadata')
-        .populate('user');
-      return application;
-    } catch (error) {
-      return undefined;
-    }
+    return this.applicationModel.findOne(filter).populate('user');
   }
 
   async updateMany(

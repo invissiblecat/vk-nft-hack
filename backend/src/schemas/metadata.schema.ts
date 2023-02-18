@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 import { Application } from './application.schema';
 import { Collection } from './collection.schema';
+import { User } from './user.schema';
 
 export type MetadataDocument = HydratedDocument<Metadata>;
 

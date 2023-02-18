@@ -18,6 +18,8 @@ import { isAddress } from 'ethers/lib/utils';
 import { ContractsService } from 'src/contracts/contracts.service';
 
 import { Types } from 'mongoose';
+import { UserService } from 'src/user/user.service';
+import { ApplicationService } from 'src/application/application.service';
 
 const spreadMetadata = (metadata: MetadataDocument) => {
   const { link, text, pathToImage, ...data } = metadata.toObject();
@@ -81,17 +83,6 @@ export class MetadataController {
     return metadatas.map((metadata, i) => {
       if (accesses[i]) return metadata;
       return spreadMetadata(metadata);
-    });
-  }
-
-  @Get('availible')
-  @CheckSignature()
-  async findAvailible(@Request() req): Promise<Metadata[]> {
-    const { metadatas, accesses } =
-      await this.metadataService.findMetadataWithAccesses(req.user);
-    return metadatas.filter((_, i) => {
-      if (accesses[i]) return true;
-      return false;
     });
   }
 

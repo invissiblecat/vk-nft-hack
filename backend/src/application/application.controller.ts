@@ -9,8 +9,11 @@ import {
   Param,
 } from '@nestjs/common';
 import { ApiBody } from '@nestjs/swagger';
+import { Types } from 'mongoose';
 
 import { CheckCollectionOwner, CheckSignature } from 'src/guards/guards';
+import { MetadataService } from 'src/metadata/metadata.service';
+import { Application } from 'src/schemas/application.schema';
 import { UserService } from 'src/user/user.service';
 import { ApplicationService } from './application.service';
 import { CreateApplicationDto } from './dto/create-application.dto';
@@ -18,6 +21,7 @@ import { CreateApplicationDto } from './dto/create-application.dto';
 @Controller('application')
 export class ApplicationController {
   constructor(
+    private readonly metadataService: MetadataService,
     private readonly applicationService: ApplicationService,
     private readonly userService: UserService,
   ) {}
@@ -34,21 +38,51 @@ export class ApplicationController {
     });
   }
 
-  @Get('tokenDbId')
+  @Get(':tokenDbId/all')
   @CheckSignature()
-  async findByUserAddress(@Request() { address }, @Param() tokenDbId: string) {
-    let user = await this.userService.findOne({ address });
-    if (!user) user = await this.userService.create({ address });
+  async findAll(@Param('tokenDbId') tokenDbId: string) {
+    return this.applicationService.find({
+      desiredTokenMetadata: new Types.ObjectId(tokenDbId),
+    });
+  }
+
+  @Get('metadata/availible')
+  @CheckSignature()
+  async findAccepted(@Request() req) {
+    const user = await this.userService.findOne({ address: req.user });
+    const applications = await this.applicationService.find({
+      isAccepted: true,
+      user: user._id,
+    });
+    let promises = [];
+    applications.forEach((application) =>
+      promises.push(
+        this.metadataService.findOne({ _id: application.desiredTokenMetadata }),
+      ),
+    );
+    return Promise.all(promises);
+  }
+
+  @Get(':tokenDbId')
+  @CheckSignature()
+  async findByUserAddress(
+    @Request() req,
+    @Param('tokenDbId') tokenDbId: string,
+  ): Promise<Application> {
+    let user = await this.userService.findOne({ address: req.user });
+    if (!user) user = await this.userService.create({ address: req.user });
+    console.log({ user });
+
     if (tokenDbId) {
       return this.applicationService.findOne({
         user: user._id,
-        desiredTokenMetadata: tokenDbId,
+        desiredTokenMetadata: new Types.ObjectId(tokenDbId),
       });
     }
-    return this.applicationService.find({ user: user._id });
+    return this.applicationService.findOne({ user: user._id });
   }
 
-  @Patch()
+  @Patch(':tokenDbId')
   @ApiBody({
     schema: {
       type: 'object',
@@ -73,16 +107,16 @@ export class ApplicationController {
   })
   @CheckCollectionOwner()
   async updateMany(
-    @Request() req,
+    @Param('tokenDbId') tokenDbId: string,
     @Body()
     { accepted, declined }: { accepted: string[]; declined: string[] },
   ) {
     await this.applicationService.updateMany(
-      { _id: accepted },
+      { _id: accepted, desiredTokenMetadata: new Types.ObjectId(tokenDbId) },
       { isAccepted: true },
     );
     await this.applicationService.updateMany(
-      { _id: declined },
+      { _id: declined, desiredTokenMetadata: new Types.ObjectId(tokenDbId) },
       { isAccepted: false },
     );
   }

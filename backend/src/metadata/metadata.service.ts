@@ -73,6 +73,7 @@ export class MetadataService {
 
   async findMetadataWithAccesses(user: string) {
     const metadatas = await this.findAll();
+
     const promises = metadatas.map((metadata) => {
       return this.contractsService.hasAccessToToken(
         user,
