@@ -69,20 +69,36 @@ export class MetadataService {
       .populate('applications');
   }
 
-  makeFileName(tokenId: string, originalName: string) {
-    return tokenId + '-' + originalName;
+  makeFileName(
+    tokenId: string,
+    collectionAddress: string,
+    originalName: string,
+  ) {
+    return tokenId + '-' + collectionAddress + '-' + originalName;
   }
 
-  makeFilePath(tokenId: string, originalName: string) {
-    return DEAFULT_IMAGES_PATH + '/' + this.makeFileName(tokenId, originalName);
+  makeFilePath(
+    tokenId: string,
+    collectionAddress: string,
+    originalName: string,
+  ) {
+    return (
+      DEAFULT_IMAGES_PATH +
+      '/' +
+      this.makeFileName(tokenId, collectionAddress, originalName)
+    );
   }
 
-  makePreviewPath(tokenId: string, originalName: string) {
+  makePreviewPath(
+    tokenId: string,
+    collectionAddress: string,
+    originalName: string,
+  ) {
     return (
       DEAFULT_IMAGES_PATH +
       '/' +
       'preview-' +
-      this.makeFileName(tokenId, originalName)
+      this.makeFileName(tokenId, collectionAddress, originalName)
     );
   }
 }

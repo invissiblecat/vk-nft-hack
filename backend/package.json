@@ -9,7 +9,7 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
-    "gen-typechain": "typechain --out-dir src/abi/types --target=ethers-v5 \"./abi/*.json\"",
+    "gen-typechain": "typechain --out-dir src/abi/types --target=ethers-v5 \"src/abi/*.json\"",
     "tunnel": "vk-tunnel --insecure=1 --http-protocol=http --ws-protocol=wss --host=127.0.0.1 --port=3000 app_id=8174360 endpoints=[web]",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",

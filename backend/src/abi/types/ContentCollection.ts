@@ -37,6 +37,7 @@ export interface ContentCollectionInterface extends utils.Interface {
     "deleteWhitelistMembers(uint256,address[])": FunctionFragment;
     "getAccess(uint256,address)": FunctionFragment;
     "getApproved(uint256)": FunctionFragment;
+    "getBatchAccess(uint256[],address)": FunctionFragment;
     "getDeployer()": FunctionFragment;
     "isAdmin(address)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
@@ -71,6 +72,7 @@ export interface ContentCollectionInterface extends utils.Interface {
       | "deleteWhitelistMembers"
       | "getAccess"
       | "getApproved"
+      | "getBatchAccess"
       | "getDeployer"
       | "isAdmin"
       | "isApprovedForAll"
@@ -126,6 +128,10 @@ export interface ContentCollectionInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "getApproved",
     values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getBatchAccess",
+    values: [PromiseOrValue<BigNumberish>[], PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "getDeployer",
@@ -235,6 +241,10 @@ export interface ContentCollectionInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "getAccess", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getApproved",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getBatchAccess",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -482,6 +492,12 @@ export interface ContentCollection extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
+    getBatchAccess(
+      tokenIds: PromiseOrValue<BigNumberish>[],
+      user: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[boolean[]]>;
+
     getDeployer(overrides?: CallOverrides): Promise<[string]>;
 
     isAdmin(
@@ -633,6 +649,12 @@ export interface ContentCollection extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string>;
 
+  getBatchAccess(
+    tokenIds: PromiseOrValue<BigNumberish>[],
+    user: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<boolean[]>;
+
   getDeployer(overrides?: CallOverrides): Promise<string>;
 
   isAdmin(
@@ -783,6 +805,12 @@ export interface ContentCollection extends BaseContract {
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<string>;
+
+    getBatchAccess(
+      tokenIds: PromiseOrValue<BigNumberish>[],
+      user: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<boolean[]>;
 
     getDeployer(overrides?: CallOverrides): Promise<string>;
 
@@ -1005,6 +1033,12 @@ export interface ContentCollection extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    getBatchAccess(
+      tokenIds: PromiseOrValue<BigNumberish>[],
+      user: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getDeployer(overrides?: CallOverrides): Promise<BigNumber>;
 
     isAdmin(
@@ -1154,6 +1188,12 @@ export interface ContentCollection extends BaseContract {
 
     getApproved(
       tokenId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getBatchAccess(
+      tokenIds: PromiseOrValue<BigNumberish>[],
+      user: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

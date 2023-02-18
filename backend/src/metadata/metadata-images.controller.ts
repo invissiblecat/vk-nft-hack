@@ -50,6 +50,9 @@ export class MetadataImagesController {
         tokenId: {
           type: 'string',
         },
+        collectionAddress: {
+          type: 'string',
+        },
         file: {
           type: 'string',
           format: 'binary',
@@ -63,9 +66,15 @@ export class MetadataImagesController {
     @Body() body: MetadataImageDto,
     @UploadedFile('file') file,
   ) {
-    const tokenMetadata = await this.metadataService.findOne({
+    console.log({ file });
+
+    const tokenMetadatas = await this.metadataService.findMany({
       tokenId: body.tokenId,
     });
+    const tokenMetadata = tokenMetadatas.find(
+      (metadata) =>
+        metadata.nftCollection.collectionAddress === body.collectionAddress,
+    );
     checkMetadataOrThrow(tokenMetadata, body.tokenId);
 
     const isOwner = await this.contractsService.isCollectionOwner(req.user, {
@@ -82,13 +91,16 @@ export class MetadataImagesController {
 
     const filePath = this.metadataService.makeFilePath(
       body.tokenId,
+      body.collectionAddress,
       file.originalname,
     );
+    console.log({ filePath });
 
     writeFileSync(filePath, file.buffer);
 
     const previewPath = this.metadataService.makePreviewPath(
       body.tokenId,
+      body.collectionAddress,
       file.originalname,
     );
 

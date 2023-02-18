@@ -84,4 +84,18 @@ export class ContractsService {
     const collection = await this.getCollectionContract(collectionAddress);
     return await collection.getAccess(tokenId, userAddress);
   }
+
+  async hasBatchAccess(
+    collectionAddress: string,
+    userAddress: string,
+    tokenIds: string[],
+  ) {
+    const collection = await this.getCollectionContract(collectionAddress);
+    const accesses = await collection.getBatchAccess(tokenIds, userAddress);
+    let result: { [key: string]: boolean } = {};
+    for (let i = 0; i < accesses.length; i++) {
+      result[tokenIds[i]] = accesses[i];
+    }
+    return result;
+  }
 }
