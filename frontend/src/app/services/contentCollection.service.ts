@@ -4,7 +4,7 @@ import { contentCollectionContract } from '../contracts';
 import { ContentCreateBackend, ContentCreateContract } from '../types';
 import { apiService } from './api.service';
 
-type Req = Omit<ContentCreateBackend, 'tokenId'> & ContentCreateContract & { file?: Blob & { preview?: string }, address: string; }
+type Req = Omit<ContentCreateBackend, 'tokenId' | 'txHash'> & ContentCreateContract & { file?: Blob & { preview?: string }, address: string; }
 
 class ContentService {
   async createNft({ address, initialWhitelistMembers, whitelistPlaces, file, ...reqBackend }: Req) {
@@ -12,7 +12,7 @@ class ContentService {
       address,
       content: { whitelistPlaces, initialWhitelistMembers },
     });
-    const { events } = await tx.wait();
+    const { events, transactionHash } = await tx.wait();
     if (!events) throw new Error('Ошибка: events not found');
 
     const [{ topics }] = events;
@@ -22,7 +22,7 @@ class ContentService {
     const tokenIdBN = BigNumber.from(topics[topics.length - 1]);
     const tokenId = tokenIdBN.toString();
 
-    await apiService.createNft({ ...reqBackend, tokenId });
+    await apiService.createNft({ ...reqBackend, tokenId, txHash: transactionHash });
     if (file) {
       await apiService.uploadImage({ file, tokenId, collectionAddress: address });
     }

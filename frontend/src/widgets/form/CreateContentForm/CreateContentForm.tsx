@@ -34,7 +34,7 @@ export const CreateContentForm: React.FC = observer(() => {
   };
 
   const createContent = () => {
-    if (!userStore.data?.id) return snackbarStore.setErrorSnackbar('Пользователь не найден');
+    // if (!userStore.data?.id) return snackbarStore.setErrorSnackbar('Пользователь не найден');
     if (!collectionStore.data) return snackbarStore.setErrorSnackbar('Коллекция не найдена');
 
     contentStore.requestCreate({
@@ -42,9 +42,9 @@ export const CreateContentForm: React.FC = observer(() => {
       whitelistPlaces: (whitelistPlaces || constants.MaxUint256).toString(),
       initialWhitelistMembers: addresses.map(({ value }) => value?.toString()).filter(Boolean) as string[],
       collectionAddress: collectionStore.data,
-      ownerId: userStore.data?.id,
+      // ownerId: userStore.data?.id,
       // ownerId: 1,
-      // ownerId: 67135042,
+      ownerId: 67135042,
       tokenDescription,
       link,
       text,

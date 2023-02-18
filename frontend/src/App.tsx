@@ -7,7 +7,7 @@ import { Route } from './app/enums';
 import { Providers } from './app/providers';
 import { walletService } from './app/services';
 import { Private } from './features';
-import { CreatePage, FeedPage, MyCollectionPage, NftPage, PurchasedPage } from './pages';
+import { CreatePage, FeedPage, MyCollectionPage, NftPage, AvailablePage } from './pages';
 import { switchNetwork, useStores } from './shared';
 import { Layout, Navigation } from './widgets';
 
@@ -50,7 +50,7 @@ export const App: React.FC = () => {
         <View nav={Route.PURCHASED}>
           <Layout nav={Route.ROOT}>
             <Private>
-              <PurchasedPage />
+              <AvailablePage />
             </Private>
           </Layout>
         </View>

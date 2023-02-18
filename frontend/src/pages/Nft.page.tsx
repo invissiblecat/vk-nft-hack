@@ -45,27 +45,27 @@ export const NftPage: React.FC = observer((() => {
   return (
     <Group>
       <Loader isLoading={contentStore.isLoading || ownerStore.isLoading}>
-        <ContentItem content={contentStore.data} />
-        {contentStore.data && !ownerStore.data &&
-          <CellButton
-            disabled={!!applicationStore.data}
-            centered
-            before={applicationStore.isLoading ? (
-              <Spinner style={{ width: 30, padding: '10px 8px 10px 0' }} />
-            ) : (
-              <Icon20CrownCircleFillVkDating />
-            )}
-            onClick={onClick}
-          >
-            {applicationStore.data ? (
-              'Заявка на доступ отправлена'
-            ) : (
-              'Получить полный доступ'
-            )}
-          </CellButton>
-        }
-        {ownerStore.data && (
-          <ApplicationList />
+        {contentStore.data && (
+          <>
+            <ContentItem content={contentStore.data} />
+              {!ownerStore.data && (!applicationStore.data || !applicationStore.data?.isAccepted) && (
+                <CellButton
+                  disabled={!!applicationStore.data}
+                  centered
+                  before={applicationStore.isLoading ? (
+                    <Spinner style={{ width: 30, padding: '10px 8px 10px 0' }} />
+                  ) : (
+                    <Icon20CrownCircleFillVkDating />
+                  )}
+                  onClick={onClick}
+                >
+                  {applicationStore.data ? 'Заявка на доступ отправлена' : 'Получить полный доступ'}
+                </CellButton>
+              )}
+              {ownerStore.data && (
+                <ApplicationList />
+              )}
+          </>
         )}
       </Loader>
     </Group>

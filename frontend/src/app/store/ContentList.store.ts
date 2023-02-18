@@ -48,9 +48,20 @@ export class ContentListStore implements Store<Content[] | void | undefined> {
     );
   }
 
-  activate(req?: { collectionAddress?: string }) {
+  requestAvailable() {
+    storeRequest(
+      this,
+      apiService.getNftListAvailable(),
+      (data) => this.setData(data),
+    );
+  }
+
+  activate(req?: { collectionAddress?: string, available?: boolean }) {
     if (req?.collectionAddress) {
       return this.requestMy(req.collectionAddress);
+    }
+    if (req?.available) {
+      return this.requestAvailable();
     }
 
     this.request();

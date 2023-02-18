@@ -58,6 +58,12 @@ class ApiService {
     return data;
   };
 
+  getNftListAvailable = async () => {
+    const { data } = await this._instance.get<Content[]>('/application/metadata/availible');
+
+    return data;
+  };
+
   getApplication = async (tokenId: string) => {
     const { data } = await this._instance.get<Application>(`/application/${tokenId}`);
 

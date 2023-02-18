@@ -9,6 +9,7 @@ export interface ContentCreateBackend {
   tokenId: string;
   collectionAddress: string;
   ownerId: number;
+  txHash: string;
   tokenDescription?: string;
   link?: string;
   text?: string;

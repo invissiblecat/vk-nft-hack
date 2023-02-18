@@ -15,12 +15,12 @@ export const CreateCollectionForm: React.FC = observer(() => {
   const [collectionSymbol, setCollectionSymbol] = useState<string>('');
 
   const createCollection = () => {
-    if (!userStore.data?.id) return snackbarStore.setErrorSnackbar('Пользователь не найден');
+    // if (!userStore.data?.id) return snackbarStore.setErrorSnackbar('Пользователь не найден');
 
     collectionStore.requestCreate({
-      vkId: userStore.data?.id,
+      // vkId: userStore.data?.id,
       // vkId: 1,
-      // vkId: 67135042,
+      vkId: 67135042,
       collectionName,
       collectionSymbol,
     });

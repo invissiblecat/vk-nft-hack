@@ -35,7 +35,7 @@ export const FeedPage: React.FC = observer(() => {
                 key={content.tokenId + content.nftCollection.collectionAddress}
                 content={content}
                 onClick={() => {
-                  push('/nft');
+                  push(Route.NFT);
                   contentStore.activate({
                     tokenId: content.tokenId,
                     collectionAddress: content.nftCollection.collectionAddress,
