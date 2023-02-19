@@ -1,2 +1,4 @@
+import { apiUrl } from '../../../app/services';
+
 export const getImgSrc = (tokenId: string, collectionAddress: string, signature?: string) =>
-  `/images/${tokenId}?collectionAddress=${collectionAddress}&signature=${signature}`;
+  `${apiUrl}/images/${tokenId}?collectionAddress=${collectionAddress}&signature=${signature}`;

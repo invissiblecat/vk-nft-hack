@@ -5,7 +5,7 @@ import React, { useMemo } from 'react';
 
 import { apiService } from '../../../app/services';
 import { Content } from '../../../app/types';
-import { ChipLink, Flex, getExplorerLink, getImgSrc, getTokenIdLink, useStores, useUserInfo } from '../../../shared';
+import { ChipLink, Flex, getExplorerLink, getImgSrc, getTokenIdLink, useUserInfo } from '../../../shared';
 
 const StyledBanner = styled(Banner)(() => ({
   padding: 0,
@@ -19,6 +19,7 @@ const StyledBanner = styled(Banner)(() => ({
 }));
 
 const StyledSimpleCell = styled(SimpleCell)(() => ({
+  marginBottom: 8,
   '& .vkuiSimpleCell__children': {
     minWidth: '100%',
   },
@@ -39,8 +40,6 @@ interface ContentItemProps {
 }
 
 export const ContentItem: React.FC<ContentItemProps> = observer(({ content, onClick }) => {
-  const { userStore } = useStores();
-
   const userInfo = useUserInfo(content?.nftCollection.ownerId);
   const sx = useMemo<SxProps>(() => {
     if (onClick) return { height: 150 };
@@ -68,7 +67,7 @@ export const ContentItem: React.FC<ContentItemProps> = observer(({ content, onCl
       {content && (
         <StyledBanner
           before={<Avatar size={68} src={userInfo?.photo_200} />}
-          header={userInfo && `Автор: ${userInfo?.first_name} ${userInfo?.last_name}`}
+          header={userInfo && `${userInfo?.first_name} ${userInfo?.last_name}`}
           actions={
             <>
               <Spacing size={8} />
