@@ -24,7 +24,13 @@ export const CreatePage: React.FC = observer(() => {
               )}
             </Title>
             <Spacing size={8} />
-            <Headline style={{ whiteSpace: 'initial' }} level="2">Каждая NFT принадлежит коллекции, прежде чем создать свой первый NFT, необходимо создать коллекцию.</Headline>
+            <Headline style={{ whiteSpace: 'initial' }} level="2">
+              {collectionAddressStore.data ? (
+                'NFT содаётся один раз и навсегда, изменить значения полей невозможно, будте внимательней!'
+              ) : (
+                'Каждая NFT принадлежит коллекции, прежде чем создать свой первый NFT, необходимо создать коллекцию.'
+              )}
+            </Headline>
           </SimpleCell>
           {collectionAddressStore.data ? (
             <CreateContentForm />

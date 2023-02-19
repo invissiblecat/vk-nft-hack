@@ -37,7 +37,7 @@ export const ApplicationListDeclined: React.FC<ApplicationListDeclinedProps> = o
   return (
     <ApplicationListBase
       icon={<Icon28ListLikeOutline style={{ color: 'white' }} />}
-      title="Отклоненные заявки"
+      title="Не одобренные заявки"
       addresses={declinedAddresses}
       request={request}
       selectedAddresses={selectedAddresses}
