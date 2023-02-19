@@ -1,6 +1,8 @@
 import '@vkontakte/vkui/dist/vkui.css';
 
-import { View } from '@cteamdev/router';
+import { back, View } from '@cteamdev/router';
+import { Icon20Cancel } from '@vkontakte/icons';
+import { Panel, PanelHeader, PanelHeaderButton } from '@vkontakte/vkui';
 import React, { useEffect } from 'react';
 
 import { Route } from './app/enums';
@@ -42,11 +44,17 @@ export const App: React.FC = () => {
               <FeedPage />
             </Private>
           </Layout>
-          <Layout nav={Route.NFT}>
+          <Panel nav={Route.NFT}>
+            <PanelHeader before={
+              <PanelHeaderButton onClick={back}>
+                <Icon20Cancel />
+              </PanelHeaderButton>
+            }
+            />
             <Private>
               <NftPage />
             </Private>
-          </Layout>
+          </Panel>
         </View>
         <View nav={Route.PURCHASED}>
           <Layout nav={Route.ROOT}>

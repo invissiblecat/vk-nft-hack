@@ -77,10 +77,10 @@ export const ContentItem: React.FC<ContentItemProps> = observer(({ content, onCl
               <Spacing size={8} />
               <Flex gap={4} flexWrap="wrap">
                 <ChipLink href={getTokenIdLink(content.nftCollection.collectionAddress, content.tokenId)}>
-                  Посмотреть NFT на Bscscan
+                  NFT на Bscscan
                 </ChipLink>
                 <ChipLink href={getExplorerLink(content.txHash)}>
-                  Посмотреть транзакцию создания
+                  Tранзакция создания
                 </ChipLink>
               </Flex>
             </>
