@@ -19,8 +19,6 @@ export const CreateCollectionForm: React.FC = observer(() => {
 
     collectionAddressStore.requestCreate({
       vkId: userStore.data?.id,
-      // vkId: 1,
-      // vkId: 67135042,
       collectionName,
       collectionSymbol,
     });

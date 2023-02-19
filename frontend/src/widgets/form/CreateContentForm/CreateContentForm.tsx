@@ -38,8 +38,6 @@ export const CreateContentForm: React.FC = observer(() => {
       initialWhitelistMembers: [],
       collectionAddress: collectionAddressStore.data,
       ownerId: userStore.data?.id,
-      // ownerId: 1,
-      // ownerId: 67135042,
       tokenDescription,
       link,
       text,
