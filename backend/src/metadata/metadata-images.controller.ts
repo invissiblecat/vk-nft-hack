@@ -87,7 +87,6 @@ export class MetadataImagesController {
       body.collectionAddress,
       body.base64File,
     );
-    console.log({ filePath });
 
     writeFileSync(filePath, imageBuffer);
 
@@ -113,8 +112,6 @@ export class MetadataImagesController {
     @Query('signature') signature: string,
     @Res() response: Response,
   ) {
-    console.log(1);
-
     const user = getUserAddress(signature);
     const tokenMetadatas = await this.metadataService.findMany({ tokenId });
     const tokenMetadata = tokenMetadatas.find(
@@ -131,14 +128,10 @@ export class MetadataImagesController {
     let path = tokenMetadata.pathToPreview;
     if (hasAccess) path = tokenMetadata.pathToImage;
 
-    console.log({ path });
-
     const resolvedPath = resolve(path);
     if (!existsSync(resolvedPath)) {
       throw new NotFoundException(`Image for token ${tokenId} not found`);
     }
-
-    console.log(1);
 
     response.download(resolvedPath);
     return response;

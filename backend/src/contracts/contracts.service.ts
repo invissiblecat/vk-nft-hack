@@ -85,8 +85,6 @@ export class ContractsService {
 
     const access = await collection.getAccess(tokenId, userAddress);
 
-    console.log({ access });
-
     return access;
   }
 

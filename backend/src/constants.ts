@@ -24,8 +24,6 @@ export const getUserAddress = (signature: string) => {
     const userAddress = verifyMessage(messageToSign, signature);
 
     if (!isAddress(userAddress)) {
-      console.log({ userAddress });
-
       throw new UnauthorizedException(`Wrong signature`);
     }
     return userAddress;
