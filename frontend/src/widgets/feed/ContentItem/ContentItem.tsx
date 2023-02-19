@@ -1,22 +1,11 @@
 import { Card, CardContent, CardMedia, styled, SxProps } from '@mui/material';
-import { Icon12ArrowUpRightOutSquareOutline } from '@vkontakte/icons';
-import { Chip, Link, SimpleCell, Spacing, Text, Title } from '@vkontakte/vkui';
+import { SimpleCell, Spacing, Text, Title } from '@vkontakte/vkui';
 import { observer } from 'mobx-react-lite';
 import React, { useMemo } from 'react';
 
 import { apiService } from '../../../app/services';
 import { Content } from '../../../app/types';
-import { getImgSrc } from '../../../shared';
-
-const StyledChip = styled(Chip)({
-  transition: 'all 0.2s',
-  '& span': {
-    color: 'var(--text_link)',
-  },
-  '&:hover': {
-    transform: 'translate(2px, -2px)',
-  },
-});
+import { ChipLink, Flex, getExplorerLink, getImgSrc, getTokenIdLink } from '../../../shared';
 
 const StyledSimpleCell = styled(SimpleCell)(() => ({
   '& .vkuiSimpleCell__children': {
@@ -47,6 +36,22 @@ export const ContentItem: React.FC<ContentItemProps> = observer(({ content, onCl
 
   return (
     <StyledSimpleCell disabled={!onClick} onClick={onClick}>
+      {content && (
+        <SimpleCell disabled style={{ padding: 0 }}>
+          <Spacing size={2} />
+          <Flex w100 justifyContent="flex-end">
+            <ChipLink href={getTokenIdLink(content.nftCollection.collectionAddress, content.tokenId)}>
+              Посмотреть NFT на Bscscan
+            </ChipLink>
+          </Flex>
+          <Spacing size={4} />
+          <Flex w100 justifyContent="flex-end">
+            <ChipLink href={getExplorerLink(content.txHash)}>
+              Посмотреть транзакцию создания на Bscscan
+            </ChipLink>
+          </Flex>
+        </SimpleCell>
+      )}
       <Card sx={{ width: '100%', maxWidth: '100%', minWidth: '100%' }} variant="elevation">
         {content?.pathToPreview && (
           <CardMedia
@@ -61,11 +66,9 @@ export const ContentItem: React.FC<ContentItemProps> = observer(({ content, onCl
           <Spacing />
           {content?.link && (
             <>
-              <Link href={content.link} target="_blank">
-                <StyledChip value={content.link} removable={false} after={<Icon12ArrowUpRightOutSquareOutline />}>
-                  {content.link}
-                </StyledChip>
-              </Link>
+              <ChipLink href={content.link}>
+                {content.link}
+              </ChipLink>
               <Spacing />
             </>
           )}
