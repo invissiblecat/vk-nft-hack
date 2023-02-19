@@ -10,7 +10,7 @@ import { ChipLink, Flex, getExplorerLink, getImgSrc, getTokenIdLink, useUserInfo
 const StyledBanner = styled(Banner)(() => ({
   padding: 0,
   '& > div': {
-    paddingBottom: 4,
+    paddingBottom: 8,
     background: 'transparent',
     '&::before': {
       content: 'none',

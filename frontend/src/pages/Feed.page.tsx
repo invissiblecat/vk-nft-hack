@@ -18,36 +18,32 @@ export const FeedPage: React.FC = observer(() => {
     return () => contentListStore.deactivate();
   }, [contentListStore]);
 
-  console.log(contentListStore.data);
-
   return (
-    <>
-      <Group>
-        <Loader isLoading={contentListStore.isLoading}>
-          <EmptyPage
-            isEmpty={!contentListStore.data || !contentListStore.data.length}
-            action={
-              <Button onClick={() => push(Route.CREATE)}>
-                Буду первый!
-              </Button>
+    <Group>
+      <Loader isLoading={contentListStore.isLoading}>
+        <EmptyPage
+          isEmpty={!contentListStore.data || !contentListStore.data.length}
+          action={
+            <Button onClick={() => push(Route.CREATE)}>
+              Буду первый!
+            </Button>
             }
-          >
-            {!!contentListStore.data?.length && contentListStore.data.map((content) => (
-              <ContentItem
-                key={content.tokenId + content.nftCollection.collectionAddress}
-                content={content}
-                onClick={() => {
-                  push(Route.NFT);
-                  contentStore.activate({
-                    tokenId: content.tokenId,
-                    collectionAddress: content.nftCollection.collectionAddress,
-                  });
-                }}
-              />
-            ))}
-          </EmptyPage>
-        </Loader>
-      </Group>
-    </>
+        >
+          {!!contentListStore.data?.length && contentListStore.data.map((content) => (
+            <ContentItem
+              key={content.tokenId + content.nftCollection.collectionAddress}
+              content={content}
+              onClick={() => {
+                push(Route.NFT);
+                contentStore.activate({
+                  tokenId: content.tokenId,
+                  collectionAddress: content.nftCollection.collectionAddress,
+                });
+              }}
+            />
+          ))}
+        </EmptyPage>
+      </Loader>
+    </Group>
   );
 });
