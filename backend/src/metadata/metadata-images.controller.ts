@@ -75,7 +75,7 @@ export class MetadataImagesController {
 
     if (tokenMetadata.pathToImage) {
       try {
-        unlinkSync(tokenMetadata.pathToImage); //todo exception
+        unlinkSync(tokenMetadata.pathToImage);
         unlinkSync(tokenMetadata.pathToPreview);
       } catch (error) {}
     }

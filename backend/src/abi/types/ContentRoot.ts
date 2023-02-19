@@ -30,15 +30,11 @@ import type {
 export interface ContentRootInterface extends utils.Interface {
   functions: {
     "createCollection(uint256,string,string)": FunctionFragment;
-    "deleteCollection(uint256)": FunctionFragment;
     "ownerIdToCollection(uint256)": FunctionFragment;
   };
 
   getFunction(
-    nameOrSignatureOrTopic:
-      | "createCollection"
-      | "deleteCollection"
-      | "ownerIdToCollection"
+    nameOrSignatureOrTopic: "createCollection" | "ownerIdToCollection"
   ): FunctionFragment;
 
   encodeFunctionData(
@@ -50,20 +46,12 @@ export interface ContentRootInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "deleteCollection",
-    values: [PromiseOrValue<BigNumberish>]
-  ): string;
-  encodeFunctionData(
     functionFragment: "ownerIdToCollection",
     values: [PromiseOrValue<BigNumberish>]
   ): string;
 
   decodeFunctionResult(
     functionFragment: "createCollection",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "deleteCollection",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -124,11 +112,6 @@ export interface ContentRoot extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    deleteCollection(
-      ownerId: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
     ownerIdToCollection(
       arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -139,11 +122,6 @@ export interface ContentRoot extends BaseContract {
     ownerId: PromiseOrValue<BigNumberish>,
     collectionName: PromiseOrValue<string>,
     collectionSymbol: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  deleteCollection(
-    ownerId: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -159,11 +137,6 @@ export interface ContentRoot extends BaseContract {
       collectionSymbol: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<string>;
-
-    deleteCollection(
-      ownerId: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     ownerIdToCollection(
       arg0: PromiseOrValue<BigNumberish>,
@@ -190,11 +163,6 @@ export interface ContentRoot extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    deleteCollection(
-      ownerId: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
     ownerIdToCollection(
       arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -206,11 +174,6 @@ export interface ContentRoot extends BaseContract {
       ownerId: PromiseOrValue<BigNumberish>,
       collectionName: PromiseOrValue<string>,
       collectionSymbol: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    deleteCollection(
-      ownerId: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

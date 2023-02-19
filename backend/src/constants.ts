@@ -17,7 +17,7 @@ export const checkMetadataOrThrow = (
   }
 };
 
-export const messageToSign = 'sign message'; //todo make dynamic message
+export const messageToSign = 'sign message';
 
 export const getUserAddress = (signature: string) => {
   try {

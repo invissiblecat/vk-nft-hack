@@ -51,19 +51,6 @@ export const rootAbi = `[
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "ownerId",
-        "type": "uint256"
-      }
-    ],
-    "name": "deleteCollection",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
         "name": "",
         "type": "uint256"
       }
