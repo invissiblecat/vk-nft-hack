@@ -52,7 +52,9 @@ export class ContentStore implements Store<Content | void> {
       this,
       contentCollectionService.createNft(...req),
       () => {
-        this.reload();
+        if (this.req[0].tokenId && this.req[0].collectionAddress) {
+          this.reload();
+        }
         this.snackbarStore.setSuccessSnackbar('Контент создан');
         push(Route.MY);
       },

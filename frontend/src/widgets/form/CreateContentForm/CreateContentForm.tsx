@@ -75,7 +75,10 @@ export const CreateContentForm: React.FC = observer(() => {
         <Textarea
           disabled={contentStore.isLoading}
           value={title}
-          onChange={({ target }) => setTitle(target.value)}
+          onChange={({ target }) => {
+            setTitle(target.value);
+            setError({ title: false });
+          }}
         />
       </FormItem>
       <FormItem top="Краткое Описание" bottom="Доступно всем пользователям">
