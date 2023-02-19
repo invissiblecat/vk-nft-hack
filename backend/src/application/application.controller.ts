@@ -49,7 +49,8 @@ export class ApplicationController {
   @Get('metadata/availible')
   @CheckSignature()
   async findAccepted(@Request() req) {
-    const user = await this.userService.findOne({ address: req.user });
+    let user = await this.userService.findOne({ address: req.user });
+    if (!user) user = await this.userService.create({ address: req.user });
     const applications = await this.applicationService.find({
       isAccepted: true,
       user: user._id,

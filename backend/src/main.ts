@@ -15,11 +15,13 @@ async function bootstrap() {
         name: 'Authorization',
         in: 'header',
       },
-      'Signature', // This name here is important for matching up with @ApiBearerAuth() in your controller!
+      'Signature',
     )
     .build();
   app.use(json({ limit: '50mb' }));
   app.use(urlencoded({ extended: true, limit: '50mb' }));
+
+  app.enableCors({ origin: '*', methods: '*', allowedHeaders: '*' });
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
