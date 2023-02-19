@@ -1,16 +1,34 @@
 import { Card, CardContent, CardMedia, styled, SxProps } from '@mui/material';
-import { SimpleCell, Spacing, Text, Title } from '@vkontakte/vkui';
+import { Avatar, Banner, SimpleCell, Spacing, Text, Title } from '@vkontakte/vkui';
 import { observer } from 'mobx-react-lite';
 import React, { useMemo } from 'react';
 
 import { apiService } from '../../../app/services';
 import { Content } from '../../../app/types';
-import { ChipLink, Flex, getExplorerLink, getImgSrc, getTokenIdLink } from '../../../shared';
+import { ChipLink, Flex, getExplorerLink, getImgSrc, getTokenIdLink, useStores } from '../../../shared';
+
+const StyledBanner = styled(Banner)(() => ({
+  padding: 0,
+  '& > div': {
+    paddingBottom: 4,
+    background: 'transparent',
+    '&::before': {
+      content: 'none',
+    },
+  },
+}));
 
 const StyledSimpleCell = styled(SimpleCell)(() => ({
   '& .vkuiSimpleCell__children': {
     minWidth: '100%',
   },
+}));
+
+const StyledCard = styled(Card)(() => ({
+  width: '100%',
+  maxWidth: '100%',
+  minWidth: '100%',
+  boxShadow: 'none',
 }));
 
 interface ContentItemProps {
@@ -19,6 +37,7 @@ interface ContentItemProps {
 }
 
 export const ContentItem: React.FC<ContentItemProps> = observer(({ content, onClick }) => {
+  const { userStore } = useStores();
   const sx = useMemo<SxProps>(() => {
     if (onClick) return { height: 150 };
 
@@ -35,24 +54,31 @@ export const ContentItem: React.FC<ContentItemProps> = observer(({ content, onCl
   }, [onClick]);
 
   return (
-    <StyledSimpleCell disabled={!onClick} onClick={onClick}>
+    <StyledSimpleCell
+      disabled={!onClick}
+      onClick={onClick}
+      style={onClick && { border: 'var(--thin-border) solid var(--image_border,var(--vkui--color_image_border_alpha))' }}
+    >
       {content && (
-        <SimpleCell disabled style={{ padding: 0 }}>
-          <Spacing size={2} />
-          <Flex w100 justifyContent="flex-end">
-            <ChipLink href={getTokenIdLink(content.nftCollection.collectionAddress, content.tokenId)}>
-              Посмотреть NFT на Bscscan
-            </ChipLink>
-          </Flex>
-          <Spacing size={4} />
-          <Flex w100 justifyContent="flex-end">
-            <ChipLink href={getExplorerLink(content.txHash)}>
-              Посмотреть транзакцию создания на Bscscan
-            </ChipLink>
-          </Flex>
-        </SimpleCell>
+        <StyledBanner
+          before={<Avatar size={68} src={userStore.data?.photo_200} />}
+          header={`Автор: ${userStore.data?.first_name} ${userStore.data?.last_name}`}
+          actions={
+            <>
+              <Spacing size={8} />
+              <Flex gap={4} flexWrap="wrap">
+                <ChipLink href={getTokenIdLink(content.nftCollection.collectionAddress, content.tokenId)}>
+                  Посмотреть NFT на Bscscan
+                </ChipLink>
+                <ChipLink href={getExplorerLink(content.txHash)}>
+                  Посмотреть транзакцию создания
+                </ChipLink>
+              </Flex>
+            </>
+          }
+        />
       )}
-      <Card sx={{ width: '100%', maxWidth: '100%', minWidth: '100%' }} variant="elevation">
+      <StyledCard>
         {content?.pathToPreview && (
           <CardMedia
             sx={sx}
@@ -80,7 +106,7 @@ export const ContentItem: React.FC<ContentItemProps> = observer(({ content, onCl
             )}
           </Text>
         </CardContent>
-      </Card>
+      </StyledCard>
     </StyledSimpleCell>
   );
 });
