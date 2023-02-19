@@ -7,10 +7,8 @@ async function main() {
   );
   const ownerId = "123";
   const tx = await contentRoot.createCollection(ownerId, "Name", "NAME");
-  console.log({ tx });
   const a = await tx.wait();
 
-  console.log({ a });
   console.log(`Collection deployed`);
 }
 

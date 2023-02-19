@@ -4,9 +4,9 @@
     "compile": "hardhat compile",
     "t": "hardhat test",
     "test": "yarn t",
+    "deploy-content-root": "hardhat run ./scripts/deploy-collection-root.ts --network $npm_config_network",
     "bnb_deploy-content-root": "hardhat run ./scripts/deploy-collection-root.ts --network testnet_bnb",
-    "bnb_delete-coll": "hardhat run ./scripts/delete-collection.ts --network testnet_bnb",
-    "bnb_create_coll_and_nft": "hardhat run ./scripts/create-collection.ts --network testnet_bnb && hardhat run ./scripts/create-nft.ts --network testnet_bnb"
+    "bnb_create-coll-and-nft": "hardhat run ./scripts/create-collection.ts --network testnet_bnb && hardhat run ./scripts/create-nft.ts --network testnet_bnb"
   },
   
   "dependencies": {
