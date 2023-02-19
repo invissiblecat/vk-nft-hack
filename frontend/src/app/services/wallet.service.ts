@@ -8,6 +8,8 @@ import { apiService } from './api.service';
 type EventHandler<T> = (arg0: T) => Promise<void>;
 const eventHandler = async () => undefined;
 
+const deeplink = `https://metamask.app.link/dapp/${window.location.host}/index.html`;
+
 export const web3Modal = new Web3Modal({
   network: 'mainnet',
   cacheProvider: true,
@@ -40,6 +42,9 @@ class WalletService {
 
   private async _setupProps() {
     try {
+      if (!window.ethereum) {
+        return window.open(deeplink, '_blank', 'noopener noreferrer');
+      }
       await switchNetwork();
       this.web3ModalProvider = await web3Modal.connect();
       this.provider = new Web3Provider(this.web3ModalProvider);

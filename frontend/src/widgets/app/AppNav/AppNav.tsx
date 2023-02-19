@@ -24,7 +24,7 @@ export const AppNav: React.FC = () => {
 
   return (
     <HorizontalScroll showArrows getScrollToLeft={(i) => i - 120} getScrollToRight={(i) => i + 120}>
-      <Tabs mode="secondary">
+      <Tabs mode="secondary" style={{ overflow: 'visible' }}>
         {routes.map(({ to, label, before }) => (
           <TabsItem
             before={before}

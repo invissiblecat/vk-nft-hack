@@ -7,9 +7,11 @@ import React from 'react';
 import { useStores } from '../../../shared';
 import { AppNav } from '../AppNav';
 
-interface LayputProps {
-  nav: string
-}
+const StyledPanelHeader = styled(PanelHeader)(() => ({
+  '& > .PanelHeader__in > .PanelHeader__after': {
+    minWidth: 50,
+  },
+}));
 
 const StyledLogoutButton = styled(IconButton)(() => ({
   position: 'absolute',
@@ -22,18 +24,22 @@ const StyledLogoutButton = styled(IconButton)(() => ({
   height: 40,
 }));
 
+interface LayputProps {
+  nav: string
+}
+
 export const Layout: React.FC<LayputProps> = observer(({ children, nav }) => {
   const { walletStore } = useStores();
   return (
     <Panel nav={nav}>
-      <PanelHeader>
+      <StyledPanelHeader>
         <AppNav />
         {walletStore.data && (
           <StyledLogoutButton>
             <Icon20DoorArrowRightOutline onClick={() => walletStore.deactivate()} />
           </StyledLogoutButton>
         )}
-      </PanelHeader>
+      </StyledPanelHeader>
       {children}
     </Panel>
   );

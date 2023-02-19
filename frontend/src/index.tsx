@@ -15,5 +15,4 @@ ReactDOM.render(
   document.getElementById('root'),
 );
 
-// if (process.env.NODE_ENV === 'development') { import('./eruda'); }
-import('./eruda');
+if (process.env.NODE_ENV === 'development') { import('./eruda'); }
