@@ -17,7 +17,7 @@ export const checkMetadataOrThrow = (
   }
 };
 
-export const messageToSign = 'sign message';
+export const messageToSign = 'NFT To-Go Confirmation';
 
 export const getUserAddress = (signature: string) => {
   try {
