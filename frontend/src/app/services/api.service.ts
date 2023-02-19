@@ -3,7 +3,7 @@ import axios, { AxiosInstance } from 'axios';
 import { fileToBase64 } from '../../shared';
 import { Application, Collection, Content, ContentCreateBackend } from '../types';
 
-export const apiUrl = 'https://user151920325-tqh6yoxa.wormhole.vk-apps.com';
+export const apiUrl = 'https://user151920325-zuuza77z.wormhole.vk-apps.com';
 
 class ApiService {
   private _instance: AxiosInstance;
