@@ -1,29 +1,17 @@
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
-import WalletConnectProvider from '@walletconnect/web3-provider';
-import Web3Modal, { IProviderOptions } from 'web3modal';
+import Web3Modal from 'web3modal';
 
-import { NODES_MAP, SIGNATURE_MESSAGE, switchNetwork } from '../../shared';
+import { SIGNATURE_MESSAGE, switchNetwork } from '../../shared';
 import { Connector } from '../enums';
 import { apiService } from './api.service';
 
 type EventHandler<T> = (arg0: T) => Promise<void>;
 const eventHandler = async () => undefined;
 
-const providerOptions: IProviderOptions = {
-  [Connector.WalletConnect]: {
-    package: WalletConnectProvider,
-    options: {
-      rpc: {
-        ...NODES_MAP,
-      },
-    },
-  },
-};
-
 export const web3Modal = new Web3Modal({
   network: 'mainnet',
   cacheProvider: true,
-  providerOptions,
+  providerOptions: {},
   theme: 'dark',
 });
 

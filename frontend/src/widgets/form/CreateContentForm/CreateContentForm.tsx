@@ -15,7 +15,9 @@ export const CreateContentForm: React.FC = observer(() => {
   const [title, setTitle] = useState<string>('');
   const [text, setText] = useState<string>('');
   const [file, setFile] = useState<Blob & { preview?: string }>();
-
+  const [error, setError] = useState({
+    title: false,
+  });
   const reset = () => {
     setWhitelistPlaces(undefined);
     setTokenDescription('');
@@ -28,6 +30,7 @@ export const CreateContentForm: React.FC = observer(() => {
   const createContent = () => {
     if (!userStore.data?.id) return snackbarStore.setErrorSnackbar('Пользователь не найден');
     if (!collectionAddressStore.data) return snackbarStore.setErrorSnackbar('Коллекция не найдена');
+    if (!title) return setError({ title: !title });
 
     contentStore.requestCreate({
       address: collectionAddressStore.data,
@@ -60,7 +63,7 @@ export const CreateContentForm: React.FC = observer(() => {
       <FormItem top="Картинка">
         <IconUpload file={file} onChange={setFile} disabled={contentStore.isLoading} />
       </FormItem>
-      <FormItem top="Максимум пользователей" bottom="Оставьте поле пустым, если колличество пользователей неограничено">
+      <FormItem top="Максимум пользователей" bottom="Оставьте поле пустым, если количество пользователей неограничено">
         <Input
           disabled={contentStore.isLoading}
           type="number"
@@ -68,21 +71,21 @@ export const CreateContentForm: React.FC = observer(() => {
           onChange={({ target }) => setWhitelistPlaces(+target.value)}
         />
       </FormItem>
-      <FormItem top="Заголовок">
+      <FormItem top="Заголовок" status={error.title ? 'error' : 'default'}>
         <Textarea
           disabled={contentStore.isLoading}
           value={title}
           onChange={({ target }) => setTitle(target.value)}
         />
       </FormItem>
-      <FormItem top="Краткое Описание">
+      <FormItem top="Краткое Описание" bottom="Доступно всем пользователям">
         <Textarea
           disabled={contentStore.isLoading}
           value={tokenDescription}
           onChange={({ target }) => setTokenDescription(target.value)}
         />
       </FormItem>
-      <FormItem top="Полное Описание">
+      <FormItem top="Полное Описание" bottom="Доступно ограниченному количеству пользователей">
         <Textarea
           disabled={contentStore.isLoading}
           value={text}

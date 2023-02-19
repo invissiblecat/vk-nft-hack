@@ -7,12 +7,12 @@ import { Route } from './app/enums';
 import { Providers } from './app/providers';
 import { walletService } from './app/services';
 import { Private } from './features';
-import { CreatePage, FeedPage, MyCollectionPage, NftPage, AvailablePage } from './pages';
+import { AvailablePage, CreatePage, FeedPage, MyCollectionPage, NftPage } from './pages';
 import { switchNetwork, useStores } from './shared';
 import { Layout, Navigation } from './widgets';
 
 export const App: React.FC = () => {
-  const { userStore, walletStore } = useStores();
+  const { userStore, walletStore, accessTokenStore } = useStores();
 
   useEffect(() => {
     userStore.activate();
@@ -26,6 +26,7 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
+    accessTokenStore.activate();
     walletService.initListeners(
       handleAccountsChanged,
       handleChainChanged,

@@ -39,8 +39,12 @@ export const CreateCollectionForm: React.FC = observer(() => {
 
   return (
     <FormLayout onSubmit={onSubmit}>
-      <FormItem top="Название" status={error.collectionName ? 'error' : 'default'}>
+      <FormItem
+        top="Название"
+        status={error.collectionName ? 'error' : 'default'}
+      >
         <Input
+          placeholder="Например: Bored Ape Yacht Club"
           value={collectionName}
           onChange={({ target }) => {
             setCollectionName(target.value);
@@ -49,8 +53,12 @@ export const CreateCollectionForm: React.FC = observer(() => {
             }
         />
       </FormItem>
-      <FormItem top="Символ" status={error.collectionSymbol ? 'error' : 'default'}>
+      <FormItem
+        top="Символ"
+        status={error.collectionSymbol ? 'error' : 'default'}
+      >
         <Input
+          placeholder="Например: BAYC"
           value={collectionSymbol}
           onChange={({ target }) => {
             setCollectionSymbol(target.value);

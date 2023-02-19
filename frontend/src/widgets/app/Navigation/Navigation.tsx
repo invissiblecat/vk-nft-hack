@@ -16,7 +16,7 @@ interface NavigationProps {
 
 export const Navigation: React.FC<NavigationProps> = ({ children }: NavigationProps) => {
   const { viewWidth } = useAdaptivity();
-  const isDesktop = useMemo(() => (viewWidth ?? 0) >= ViewWidth.SMALL_TABLET, [viewWidth]);
+  const isDesktop = useMemo(() => (viewWidth ?? 0) >= ViewWidth.TABLET, [viewWidth]);
 
   return (
     <Structure>

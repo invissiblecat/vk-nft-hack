@@ -1,5 +1,5 @@
 import { styled } from '@mui/material';
-import { Icon20Chain, Icon20DoorArrowRightOutline } from '@vkontakte/icons';
+import { Icon20DoorArrowRightOutline } from '@vkontakte/icons';
 import { IconButton, Panel, PanelHeader } from '@vkontakte/vkui';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
@@ -28,13 +28,9 @@ export const Layout: React.FC<LayputProps> = observer(({ children, nav }) => {
     <Panel nav={nav}>
       <PanelHeader>
         <AppNav />
-        {walletStore.data ? (
+        {walletStore.data && (
           <StyledLogoutButton>
             <Icon20DoorArrowRightOutline onClick={() => walletStore.deactivate()} />
-          </StyledLogoutButton>
-        ) : (
-          <StyledLogoutButton>
-            <Icon20Chain onClick={() => walletStore.activate()} />
           </StyledLogoutButton>
         )}
       </PanelHeader>

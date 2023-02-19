@@ -1,5 +1,5 @@
 import { Card, CardContent, CardMedia, styled, SxProps } from '@mui/material';
-import { Avatar, Banner, SimpleCell, Spacing, Text, Title } from '@vkontakte/vkui';
+import { Avatar, Banner, Link, SimpleCell, Spacing, Text, Title } from '@vkontakte/vkui';
 import { observer } from 'mobx-react-lite';
 import React, { useMemo } from 'react';
 
@@ -66,7 +66,11 @@ export const ContentItem: React.FC<ContentItemProps> = observer(({ content, onCl
     >
       {content && (
         <StyledBanner
-          before={<Avatar size={68} src={userInfo?.photo_200} />}
+          before={
+            <Link href={`https://vk.com/${userInfo?.screen_name ?? content?.nftCollection.ownerId}`} target="_blank">
+              <Avatar size={68} src={userInfo?.photo_200} />
+            </Link>
+          }
           header={userInfo && `${userInfo?.first_name} ${userInfo?.last_name}`}
           actions={
             <>
