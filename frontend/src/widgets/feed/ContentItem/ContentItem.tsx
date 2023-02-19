@@ -5,7 +5,7 @@ import React, { useMemo } from 'react';
 
 import { apiService } from '../../../app/services';
 import { Content } from '../../../app/types';
-import { ChipLink, Flex, getExplorerLink, getImgSrc, getTokenIdLink, useStores } from '../../../shared';
+import { ChipLink, Flex, getExplorerLink, getImgSrc, getTokenIdLink, useStores, useUserInfo } from '../../../shared';
 
 const StyledBanner = styled(Banner)(() => ({
   padding: 0,
@@ -38,6 +38,8 @@ interface ContentItemProps {
 
 export const ContentItem: React.FC<ContentItemProps> = observer(({ content, onClick }) => {
   const { userStore } = useStores();
+
+  const userInfo = useUserInfo(content?.nftCollection.ownerId);
   const sx = useMemo<SxProps>(() => {
     if (onClick) return { height: 150 };
 
@@ -57,12 +59,14 @@ export const ContentItem: React.FC<ContentItemProps> = observer(({ content, onCl
     <StyledSimpleCell
       disabled={!onClick}
       onClick={onClick}
-      style={onClick && { border: 'var(--thin-border) solid var(--image_border,var(--vkui--color_image_border_alpha))' }}
+      style={onClick && {
+        border: 'var(--thin-border) solid var(--image_border,var(--vkui--color_image_border_alpha))',
+      }}
     >
       {content && (
         <StyledBanner
-          before={<Avatar size={68} src={userStore.data?.photo_200} />}
-          header={`Автор: ${userStore.data?.first_name} ${userStore.data?.last_name}`}
+          before={<Avatar size={68} src={userInfo?.photo_200} />}
+          header={userInfo && `Автор: ${userInfo?.first_name} ${userInfo?.last_name}`}
           actions={
             <>
               <Spacing size={8} />
