@@ -8,13 +8,13 @@ export const useCollectionRequest = () => {
   const { collectionAddressStore, userStore } = useStores();
 
   useEffect(() => {
-    // if (!userStore.data) return;
+    if (!userStore.data) return;
 
     collectionAddressStore.activate({
       address: CONTENT_ROOT_ADDRESSES_MAP[ChainId.BINANCE_TESTNET],
       // vkId: 1,
-      vkId: 67135042,
-      // vkId: userStore.data.id,
+      // vkId: 67135042,
+      vkId: userStore.data.id,
     });
   }, [collectionAddressStore, userStore.data]);
 };
