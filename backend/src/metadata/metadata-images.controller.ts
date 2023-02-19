@@ -1,38 +1,44 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   NotFoundException,
   Param,
   Post,
   Query,
+  Request,
   Res,
-  UploadedFile,
-  UseInterceptors,
 } from '@nestjs/common';
-import {
-  checkMetadataOrThrow,
-  DEAFULT_IMAGES_PATH,
-  MetadataService,
-} from './metadata.service';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBody, ApiConsumes } from '@nestjs/swagger';
+import { MetadataService } from './metadata.service';
+import { ApiBody } from '@nestjs/swagger';
 import { MetadataImageDto } from './dto/upload-image-dto';
 import { existsSync, mkdirSync, unlinkSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import { Response } from 'express';
+import { CheckSignature } from 'src/guards/guards';
+import { ContractsService } from 'src/contracts/contracts.service';
+import {
+  DEAFULT_IMAGES_PATH,
+  checkMetadataOrThrow,
+  getUserAddress,
+} from 'src/constants';
+
 const Jimp = require('jimp');
 
-@Controller('metadata-images')
+@Controller('images')
 export class MetadataImagesController {
-  constructor(private readonly metadataService: MetadataService) {
+  constructor(
+    private readonly metadataService: MetadataService,
+    private readonly contractsService: ContractsService,
+  ) {
     if (!existsSync(DEAFULT_IMAGES_PATH)) {
       mkdirSync(DEAFULT_IMAGES_PATH);
     }
   }
 
-  @Post('uploadImage')
-  @ApiConsumes('multipart/form-data')
+  @Post()
+  @CheckSignature()
   @ApiBody({
     schema: {
       type: 'object',
@@ -40,35 +46,54 @@ export class MetadataImagesController {
         tokenId: {
           type: 'string',
         },
-        file: {
+        collectionAddress: {
+          type: 'string',
+        },
+        base64File: {
           type: 'string',
           format: 'binary',
         },
       },
     },
   })
-  @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(@Body() body: MetadataImageDto, @UploadedFile('file') file) {
-    const tokenMetadata = await this.metadataService.findOne({
+  async uploadFile(@Request() req, @Body() body: MetadataImageDto) {
+    const tokenMetadatas = await this.metadataService.findMany({
       tokenId: body.tokenId,
     });
+    const tokenMetadata = tokenMetadatas.find(
+      (metadata) =>
+        metadata.nftCollection.collectionAddress === body.collectionAddress,
+    );
     checkMetadataOrThrow(tokenMetadata, body.tokenId);
 
-    if (tokenMetadata.pathToImage) {
-      unlinkSync(tokenMetadata.pathToImage);
-      unlinkSync(tokenMetadata.pathToPreview);
+    const isOwner = await this.contractsService.isCollectionOwner(req.user, {
+      collectionAddress: tokenMetadata.nftCollection.collectionAddress,
+    });
+    if (!isOwner) {
+      throw new ForbiddenException();
     }
+
+    if (tokenMetadata.pathToImage) {
+      try {
+        unlinkSync(tokenMetadata.pathToImage);
+        unlinkSync(tokenMetadata.pathToPreview);
+      } catch (error) {}
+    }
+
+    const imageBuffer = this.metadataService.getBase64Buffer(body.base64File);
 
     const filePath = this.metadataService.makeFilePath(
       body.tokenId,
-      file.originalname,
+      body.collectionAddress,
+      body.base64File,
     );
 
-    writeFileSync(filePath, file.buffer);
+    writeFileSync(filePath, imageBuffer);
 
     const previewPath = this.metadataService.makePreviewPath(
       body.tokenId,
-      file.originalname,
+      body.collectionAddress,
+      body.base64File,
     );
 
     const original = await Jimp.read(filePath);
@@ -80,34 +105,32 @@ export class MetadataImagesController {
     });
   }
 
-  @Get('downloadOriginalImage')
+  @Get(':tokenId')
   async downloadFile(
-    @Query('tokenId') tokenId: string,
+    @Param('tokenId') tokenId: string,
+    @Query('collectionAddress') collectionAddress: string,
+    @Query('signature') signature: string,
     @Res() response: Response,
   ) {
-    const tokenMetadata = await this.metadataService.findOne({ tokenId });
+    const user = getUserAddress(signature);
+    const tokenMetadatas = await this.metadataService.findMany({ tokenId });
+    const tokenMetadata = tokenMetadatas.find(
+      (metadata) =>
+        metadata.nftCollection.collectionAddress === collectionAddress,
+    );
     checkMetadataOrThrow(tokenMetadata, tokenId);
+    const hasAccess = await this.contractsService.hasAccessToToken(
+      user,
+      collectionAddress,
+      tokenId,
+    );
 
-    const resolvedPath = resolve(tokenMetadata.pathToImage);
+    let path = tokenMetadata.pathToPreview;
+    if (hasAccess) path = tokenMetadata.pathToImage;
+
+    const resolvedPath = resolve(path);
     if (!existsSync(resolvedPath)) {
       throw new NotFoundException(`Image for token ${tokenId} not found`);
-    }
-
-    response.download(resolvedPath);
-    return response;
-  }
-
-  @Get('downloadPreview')
-  async downloadPreview(
-    @Query('tokenId') tokenId: string,
-    @Res() response: Response,
-  ) {
-    const tokenMetadata = await this.metadataService.findOne({ tokenId });
-    checkMetadataOrThrow(tokenMetadata, tokenId);
-
-    const resolvedPath = resolve(tokenMetadata.pathToPreview);
-    if (!existsSync(resolvedPath)) {
-      throw new NotFoundException(`Preview for token ${tokenId} not found`);
     }
 
     response.download(resolvedPath);

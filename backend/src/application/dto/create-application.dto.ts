@@ -1,5 +1,4 @@
-export class CreateApplicationnDto {
-  readonly userAddress: string;
-  readonly userId: string;
-  readonly tokenId: string;
+export class CreateApplicationDto {
+  readonly tokenDbId: string;
+  [prop: string]: any;
 }

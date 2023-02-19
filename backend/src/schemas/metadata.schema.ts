@@ -2,12 +2,13 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 import { Application } from './application.schema';
 import { Collection } from './collection.schema';
+import { User } from './user.schema';
 
 export type MetadataDocument = HydratedDocument<Metadata>;
 
 @Schema()
 export class Metadata {
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true })
   tokenId: string;
 
   @Prop({
@@ -16,6 +17,12 @@ export class Metadata {
     required: true,
   })
   nftCollection: Collection;
+
+  @Prop()
+  title: string;
+
+  @Prop()
+  txHash: string;
 
   @Prop()
   tokenDescription?: string;

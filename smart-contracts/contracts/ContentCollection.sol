@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol"; 
 import "./Admin.sol";
 
-contract ContentCollection is ERC721Enumerable, Admin {
+contract ContentCollection is ERC721, Admin {
     using SafeERC20 for IERC20;
 
     address private deployer;
@@ -49,7 +49,8 @@ contract ContentCollection is ERC721Enumerable, Admin {
     } 
 
     function setWhitelistMembers(uint256 tokenId, address[] memory members) public onlyAdmin tokenMinted(tokenId) {
-        require (whitelistLimits[tokenId] >= members.length, 'setWhitelistMembers: not enough places in whitelist'); //todo require token is deployed
+        _requireMinted(tokenId);
+        require (whitelistLimits[tokenId] >= members.length, 'setWhitelistMembers: not enough places in whitelist'); 
         for (uint256 i = 0; i < members.length; i++) {
             if (getAccess(tokenId, members[i])) continue;
             whitelists[tokenId][members[i]] = true;
@@ -73,8 +74,18 @@ contract ContentCollection is ERC721Enumerable, Admin {
 
     function getAccess(uint256 tokenId, address user) public view returns (bool){
         if (user == owner() || isAdmin(user)) return true;
-        return whitelists[tokenId][user];
+        return whitelists[tokenId][user]; 
     }
+
+     function getBatchAccess(uint256[] memory tokenIds, address user) public view returns (bool[] memory){
+        bool[] memory res = new bool[](tokenIds.length);
+        for (uint256 i = 0; i < tokenIds.length; i++) {
+            if (user == owner() || isAdmin(user)) {res[i] = true; continue;}
+            res[i] = whitelists[tokenIds[i]][user];
+        }
+        return res;
+    }
+
 
     function getDeployer() public view returns (address) {
         return deployer;

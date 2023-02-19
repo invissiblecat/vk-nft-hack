@@ -5,12 +5,10 @@ async function main() {
     "ContentRoot",
     process.env.CONTENT_ROOT_ADDRESS!
   );
-  // const ownerId = "123";
-  // const tx = await contentRoot.createCollection(ownerId, "Name", "NAME");
-  // console.log({ tx });
-  // const a = await tx.wait();
+  const ownerId = "123";
+  const tx = await contentRoot.createCollection(ownerId, "Name", "NAME");
+  const a = await tx.wait();
 
-  // console.log({ a });
   console.log(`Collection deployed`);
 }
 

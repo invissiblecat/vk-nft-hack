@@ -37,6 +37,7 @@ export interface ContentCollectionInterface extends utils.Interface {
     "deleteWhitelistMembers(uint256,address[])": FunctionFragment;
     "getAccess(uint256,address)": FunctionFragment;
     "getApproved(uint256)": FunctionFragment;
+    "getBatchAccess(uint256[],address)": FunctionFragment;
     "getDeployer()": FunctionFragment;
     "isAdmin(address)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
@@ -52,10 +53,7 @@ export interface ContentCollectionInterface extends utils.Interface {
     "setWhitelistMembers(uint256,address[])": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "symbol()": FunctionFragment;
-    "tokenByIndex(uint256)": FunctionFragment;
-    "tokenOfOwnerByIndex(address,uint256)": FunctionFragment;
     "tokenURI(uint256)": FunctionFragment;
-    "totalSupply()": FunctionFragment;
     "transferFrom(address,address,uint256)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
     "whitelistLimits(uint256)": FunctionFragment;
@@ -71,6 +69,7 @@ export interface ContentCollectionInterface extends utils.Interface {
       | "deleteWhitelistMembers"
       | "getAccess"
       | "getApproved"
+      | "getBatchAccess"
       | "getDeployer"
       | "isAdmin"
       | "isApprovedForAll"
@@ -86,10 +85,7 @@ export interface ContentCollectionInterface extends utils.Interface {
       | "setWhitelistMembers"
       | "supportsInterface"
       | "symbol"
-      | "tokenByIndex"
-      | "tokenOfOwnerByIndex"
       | "tokenURI"
-      | "totalSupply"
       | "transferFrom"
       | "transferOwnership"
       | "whitelistLimits"
@@ -126,6 +122,10 @@ export interface ContentCollectionInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "getApproved",
     values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getBatchAccess",
+    values: [PromiseOrValue<BigNumberish>[], PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "getDeployer",
@@ -188,20 +188,8 @@ export interface ContentCollectionInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "tokenByIndex",
-    values: [PromiseOrValue<BigNumberish>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "tokenOfOwnerByIndex",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
-  ): string;
-  encodeFunctionData(
     functionFragment: "tokenURI",
     values: [PromiseOrValue<BigNumberish>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "totalSupply",
-    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "transferFrom",
@@ -235,6 +223,10 @@ export interface ContentCollectionInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "getAccess", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getApproved",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getBatchAccess",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -282,19 +274,7 @@ export interface ContentCollectionInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "tokenByIndex",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "tokenOfOwnerByIndex",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "tokenURI", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "totalSupply",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "transferFrom",
     data: BytesLike
@@ -482,6 +462,12 @@ export interface ContentCollection extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
+    getBatchAccess(
+      tokenIds: PromiseOrValue<BigNumberish>[],
+      user: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[boolean[]]>;
+
     getDeployer(overrides?: CallOverrides): Promise<[string]>;
 
     isAdmin(
@@ -552,23 +538,10 @@ export interface ContentCollection extends BaseContract {
 
     symbol(overrides?: CallOverrides): Promise<[string]>;
 
-    tokenByIndex(
-      index: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    tokenOfOwnerByIndex(
-      owner: PromiseOrValue<string>,
-      index: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
     tokenURI(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<[string]>;
-
-    totalSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     transferFrom(
       from: PromiseOrValue<string>,
@@ -632,6 +605,12 @@ export interface ContentCollection extends BaseContract {
     tokenId: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
   ): Promise<string>;
+
+  getBatchAccess(
+    tokenIds: PromiseOrValue<BigNumberish>[],
+    user: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<boolean[]>;
 
   getDeployer(overrides?: CallOverrides): Promise<string>;
 
@@ -703,23 +682,10 @@ export interface ContentCollection extends BaseContract {
 
   symbol(overrides?: CallOverrides): Promise<string>;
 
-  tokenByIndex(
-    index: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  tokenOfOwnerByIndex(
-    owner: PromiseOrValue<string>,
-    index: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
   tokenURI(
     tokenId: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
   ): Promise<string>;
-
-  totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
   transferFrom(
     from: PromiseOrValue<string>,
@@ -783,6 +749,12 @@ export interface ContentCollection extends BaseContract {
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<string>;
+
+    getBatchAccess(
+      tokenIds: PromiseOrValue<BigNumberish>[],
+      user: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<boolean[]>;
 
     getDeployer(overrides?: CallOverrides): Promise<string>;
 
@@ -852,23 +824,10 @@ export interface ContentCollection extends BaseContract {
 
     symbol(overrides?: CallOverrides): Promise<string>;
 
-    tokenByIndex(
-      index: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    tokenOfOwnerByIndex(
-      owner: PromiseOrValue<string>,
-      index: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     tokenURI(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<string>;
-
-    totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferFrom(
       from: PromiseOrValue<string>,
@@ -1005,6 +964,12 @@ export interface ContentCollection extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    getBatchAccess(
+      tokenIds: PromiseOrValue<BigNumberish>[],
+      user: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getDeployer(overrides?: CallOverrides): Promise<BigNumber>;
 
     isAdmin(
@@ -1075,23 +1040,10 @@ export interface ContentCollection extends BaseContract {
 
     symbol(overrides?: CallOverrides): Promise<BigNumber>;
 
-    tokenByIndex(
-      index: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    tokenOfOwnerByIndex(
-      owner: PromiseOrValue<string>,
-      index: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     tokenURI(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferFrom(
       from: PromiseOrValue<string>,
@@ -1154,6 +1106,12 @@ export interface ContentCollection extends BaseContract {
 
     getApproved(
       tokenId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getBatchAccess(
+      tokenIds: PromiseOrValue<BigNumberish>[],
+      user: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -1227,23 +1185,10 @@ export interface ContentCollection extends BaseContract {
 
     symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    tokenByIndex(
-      index: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    tokenOfOwnerByIndex(
-      owner: PromiseOrValue<string>,
-      index: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     tokenURI(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
-
-    totalSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     transferFrom(
       from: PromiseOrValue<string>,

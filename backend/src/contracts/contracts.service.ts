@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Contract, ethers } from 'ethers';
 import { collectionAbi } from 'src/abi/collection.abi';
 import { rootAbi } from 'src/abi/root.abi';
@@ -18,9 +18,9 @@ export class ContractsService {
     if (this.inited) return;
     const contractAddress = process.env.CONTENT_ROOT_ADDRESS;
     const rpcNodeUrl = process.env.JSON_RPC;
-    console.log({ contractAddress, rpcNodeUrl, rootAbi, collectionAbi });
-
-    if (!contractAddress || !rpcNodeUrl) return;
+    if (!contractAddress || !rpcNodeUrl) {
+      throw new NotFoundException(`.env is not correct`);
+    }
     this.provider = new ethers.providers.JsonRpcProvider(rpcNodeUrl);
     this.contentRootContract = new Contract(
       contractAddress,
@@ -40,13 +40,65 @@ export class ContractsService {
     ) as ContentCollection;
   }
 
-  async getCollectionAddress(ownerId: string) {
+  async getCollectionAddress(ownerId: number) {
     await this.init();
-    return this.contentRootContract.ownerIdToCollection(+ownerId);
+    return this.contentRootContract.ownerIdToCollection(ownerId);
   }
 
-  async getCollectionOwner(collectionAddress: string) {
+  async getCollectionOwner({
+    collectionAddress,
+    ownerId,
+  }: {
+    collectionAddress?: string;
+    ownerId?: number;
+  }) {
+    if (!collectionAddress) {
+      collectionAddress = await this.getCollectionAddress(ownerId);
+    }
     const collection = await this.getCollectionContract(collectionAddress);
     return collection.owner();
+  }
+
+  async isCollectionOwner(
+    userAddress: string,
+    {
+      collectionAddress,
+      ownerId,
+    }: {
+      collectionAddress?: string;
+      ownerId?: number;
+    },
+  ) {
+    const collectionOwner = await this.getCollectionOwner({
+      collectionAddress,
+      ownerId,
+    });
+    return collectionOwner.toLowerCase() === userAddress.toLowerCase();
+  }
+
+  async hasAccessToToken(
+    userAddress: string,
+    collectionAddress: string,
+    tokenId: string,
+  ): Promise<boolean> {
+    const collection = await this.getCollectionContract(collectionAddress);
+
+    const access = await collection.getAccess(tokenId, userAddress);
+
+    return access;
+  }
+
+  async hasBatchAccess(
+    collectionAddress: string,
+    userAddress: string,
+    tokenIds: string[],
+  ) {
+    const collection = await this.getCollectionContract(collectionAddress);
+    const accesses = await collection.getBatchAccess(tokenIds, userAddress);
+    let result: { [key: string]: boolean } = {};
+    for (let i = 0; i < accesses.length; i++) {
+      result[tokenIds[i]] = accesses[i];
+    }
+    return result;
   }
 }
