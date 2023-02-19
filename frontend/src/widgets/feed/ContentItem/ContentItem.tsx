@@ -25,6 +25,8 @@ const StyledSimpleCell = styled(SimpleCell)(() => ({
 }));
 
 const StyledCard = styled(Card)(() => ({
+  backgroundColor: 'var(--background_content,var(--vkui--color_background_content))',
+  color: 'var(--text_primary,var(--vkui--color_text_primary))',
   width: '100%',
   maxWidth: '100%',
   minWidth: '100%',

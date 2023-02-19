@@ -10,7 +10,7 @@ class ApiService {
 
   constructor() {
     this._instance = axios.create({
-      baseURL: '/api',
+      baseURL: 'https://user151920325-tqh6yoxa.wormhole.vk-apps.com',
     });
   }
 

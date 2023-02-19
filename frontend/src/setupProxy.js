@@ -4,7 +4,7 @@ module.exports = function (app) {
   app.use(
     '/api',
     createProxyMiddleware({
-      target: 'https://user151920325-hoemngls.wormhole.vk-apps.com/',
+      target: 'https://user151920325-tqh6yoxa.wormhole.vk-apps.com/',
       changeOrigin: true,
       pathRewrite: {
         '^/api/*': '/'
@@ -14,7 +14,7 @@ module.exports = function (app) {
   app.use(
     '/images',
     createProxyMiddleware({
-      target: 'https://user151920325-hoemngls.wormhole.vk-apps.com/',
+      target: 'https://user151920325-tqh6yoxa.wormhole.vk-apps.com/',
       changeOrigin: true,
     }),
   );

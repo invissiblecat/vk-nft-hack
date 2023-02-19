@@ -1,9 +1,15 @@
-import { Checkbox, List, ListItem, ListItemIcon, ListItemText, Paper } from '@mui/material';
+import { Checkbox, List, ListItem, ListItemIcon, ListItemText, Paper, styled } from '@mui/material';
 import { CellButton, FormItem, SimpleCell, Spinner } from '@vkontakte/vkui';
 import { observer } from 'mobx-react-lite';
 import React, { ReactNode } from 'react';
 
 import { useStores } from '../../../shared';
+
+const StyledPaper = styled(Paper)(() => ({
+  backgroundColor: 'var(--background_content,var(--vkui--color_background_content))',
+  color: 'var(--text_primary,var(--vkui--color_text_primary))',
+  boxShadow: 'none',
+}));
 
 interface ApplicationListProps {
   title: string;
@@ -39,13 +45,11 @@ export const ApplicationListBase: React.FC<ApplicationListProps> = observer(({
     setSelectedAddresses(newChecked);
   };
 
-  console.log(selectedAddresses);
-
   return (
     <>
       <SimpleCell disabled width="100%">
         <FormItem top={title} width="100%">
-          <Paper sx={{ width: 550, height: 250, overflow: 'auto' }}>
+          <StyledPaper sx={{ width: 550, height: 250, overflow: 'auto' }} variant="outlined">
             <List dense component="div" role="list">
               {addresses.map((value) => (
                 <ListItem
@@ -69,7 +73,7 @@ export const ApplicationListBase: React.FC<ApplicationListProps> = observer(({
                 </ListItem>
               ))}
             </List>
-          </Paper>
+          </StyledPaper>
         </FormItem>
       </SimpleCell>
       <CellButton
