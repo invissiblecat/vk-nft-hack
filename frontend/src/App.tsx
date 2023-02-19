@@ -14,7 +14,7 @@ import { switchNetwork, useStores } from './shared';
 import { Layout, Navigation } from './widgets';
 
 export const App: React.FC = () => {
-  const { userStore, walletStore, accessTokenStore } = useStores();
+  const { userStore, walletStore } = useStores();
 
   useEffect(() => {
     userStore.activate();
@@ -28,7 +28,6 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
-    accessTokenStore.activate();
     walletService.initListeners(
       handleAccountsChanged,
       handleChainChanged,

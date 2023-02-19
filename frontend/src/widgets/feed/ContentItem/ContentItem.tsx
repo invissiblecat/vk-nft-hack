@@ -67,7 +67,7 @@ export const ContentItem: React.FC<ContentItemProps> = observer(({ content, onCl
       {content && (
         <StyledBanner
           before={
-            <Link href={`https://vk.com/${userInfo?.screen_name ?? content?.nftCollection.ownerId}`} target="_blank">
+            <Link href={`https://vk.com/id${content.nftCollection.ownerId}`} target="_blank">
               <Avatar size={68} src={userInfo?.photo_200} />
             </Link>
           }

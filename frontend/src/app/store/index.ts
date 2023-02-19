@@ -1,4 +1,3 @@
-import { AccessTokenStore } from './AccessToken.store';
 import { ApplicationStore } from './Application.store';
 import { ApplicationListStore } from './ApplicationList.store';
 import { CollectionStore } from './Collection.store';
@@ -31,8 +30,6 @@ export class RootStore {
 
   ownerStore: OwnerStore;
 
-  accessTokenStore: AccessTokenStore;
-
   constructor() {
     this.snackbarStore = new SnackbarStore();
     this.userStore = new UserStore(this);
@@ -44,7 +41,6 @@ export class RootStore {
     this.applicationListStore = new ApplicationListStore(this);
     this.ownerStore = new OwnerStore(this);
     this.collectionStore = new CollectionStore(this);
-    this.accessTokenStore = new AccessTokenStore(this);
   }
 }
 
